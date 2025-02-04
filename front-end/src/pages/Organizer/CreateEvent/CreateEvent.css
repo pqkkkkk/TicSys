@@ -1,0 +1,17 @@
+#main {
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+}
+
+.input-item {
+    margin-bottom: 20px;
+}
+.input-item .date-time-input {
+    display: flex;
+    gap: 10px;
+}
+.label {
+    margin-bottom: 5px;
+    display: block;
+}

@@ -6,17 +6,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.ticsys.account.dao.IUserDao;
+import com.example.ticsys.account.model.OrganizerInfo;
 import com.example.ticsys.account.model.User;
+import com.example.ticsys.media.CloudinaryService;
 @Service
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final IUserDao userDao;
+    private final CloudinaryService cloudinaryService;
     @Autowired
-    public UserService(IUserDao userDao, PasswordEncoder passwordEncoder) {
+    public UserService(IUserDao userDao, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
+        this.cloudinaryService = cloudinaryService;
     }
     public List<User> GetAllUsers(String role) {
         return userDao.GetAllUsers(role);
@@ -33,5 +39,27 @@ public class UserService {
             return false;
         }
     }
-    
+    @Transactional
+    public boolean RegisterforOrganizer(OrganizerInfo organizerInfo, MultipartFile organizerAvt) {
+        try{
+            String avatarPath = cloudinaryService.uploadFile(organizerAvt);
+            if(!avatarPath.equals("")) {
+                throw new Exception("Failed to upload avatar");
+            }
+            if(!userDao.AddOrganizerInfo(organizerInfo)) {
+                throw new Exception("Failed to add organizer info");
+            }
+            if(!userDao.UpdateAvatarOfUser(organizerInfo.getUserId(), avatarPath)) {
+                throw new Exception("Failed to update avatar");
+            }
+            if(!userDao.addRolesToUser(organizerInfo.getUserId(), List.of("ORGANIZER"))) {
+                throw new Exception("Failed to add role");
+            }
+            return true;
+        } 
+        catch(Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
 }

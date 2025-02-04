@@ -46,6 +46,7 @@ public class AuthService {
                         .authenticated(false)
                         .message("user is not exist")
                         .token("")
+                        .user(null)
                         .build();
         }
 
@@ -64,6 +65,7 @@ public class AuthService {
                     .authenticated(true)
                     .message("Login successfully")
                     .token(generateToken(user))
+                    .user(user)
                     .build();
     }
     private String generateToken(User user)

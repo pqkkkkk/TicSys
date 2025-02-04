@@ -25,10 +25,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .formLogin(formLogin -> formLogin.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/account/auth/**").permitAll()
+                .requestMatchers("/api/account/auth/**").permitAll()
                 //.requestMatchers("/account/user/**").hasRole("USER")
-                .requestMatchers(HttpMethod.POST, "/account/user").permitAll()
-                .requestMatchers(HttpMethod.GET, "/account/user").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/account/user").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/account/user").hasRole("ADMIN")
+                .requestMatchers("api/event/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 ->

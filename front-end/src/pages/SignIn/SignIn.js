@@ -1,0 +1,82 @@
+import React from "react";
+import "./SignIn.css";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { SignInApi } from "../../services/api/AccountApi";
+import { setUserSession } from "../../services/UserStorageService";
+function SignIn() {
+    const [username, setUsername] = useState(null);
+    const [password, setPassword] = useState(null);
+    const navigate = useNavigate();
+    const HandleSignIn = async () => {
+        const signInRequest = {
+            userName: username,
+            passWord: password
+        };
+        if(!username || !password)
+        {
+            alert("Please fill in all fields");
+            return;
+        }
+        const response = await SignInApi(signInRequest);
+        if(response){
+            console.log(response);
+            if(response.authenticated === true)
+            {
+                alert(response.message);
+                setUserSession(response.user);
+                navigate("/");
+            }
+            else
+            {
+                alert(response.message);
+            }
+    };
+}
+  return (
+    <div className="container">
+      <div className="left-section">
+        <div className="app-name">
+          <h1>TicSys</h1>
+        </div>
+        <main>
+          <div className="welcome-text">
+            <h2>Log in to your Account</h2>
+            <p>Welcome back! Select method to log in:</p>
+          </div>
+          <div className="social-login">
+            <button>Google</button>
+            <button>Facebook</button>
+          </div>
+          <p>or continue with username</p>
+          <div className="login-form">
+                <label htmlFor="username">Username</label>
+                <input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)} 
+                    type="text" id="username"
+                    placeholder="Enter your username" />
+                <label htmlFor="password">Password</label>
+                <input
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)} 
+                    type="password" id="password" placeholder="Enter your password" />
+                <div className="options">
+                <div className="remember-me">
+                    <input type="checkbox" name="remember" id="remember" />
+                    <label htmlFor="remember">Remember me?</label>
+                </div>
+                <div className="forgot-password">
+                    <a href="#">Forgot Password?</a>
+                </div>
+                </div>
+                <button onClick={HandleSignIn}>Log in</button>
+          </div>
+          <p>Don’t have an account? <a href="#">Create an account</a></p>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default SignIn;

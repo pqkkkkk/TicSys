@@ -1,0 +1,11 @@
+export const GetUser = () => {
+    const userStr = sessionStorage.getItem('user');
+    if (userStr) return JSON.parse(userStr);
+    else return null;
+}
+export const RemoveUserSession = () => {
+    sessionStorage.removeItem('user');
+}
+export const setUserSession = (user) => {
+    sessionStorage.setItem('user', JSON.stringify(user));
+}

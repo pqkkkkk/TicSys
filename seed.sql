@@ -1,6 +1,12 @@
 insert into Role (name) values ('USER');
 insert into Role (name) values ('ADMIN');
 insert into Role (name) values ('ORGANIZER');
-
+insert into Category values ('Sport');
+insert into Category values ('Music');
+insert into Category values ('Other');
+insert into Category values ('Comedy');
+select * from Category;
 select * from users;
+select * from role;
 select * from RoleOfUser;
+select * from event;
