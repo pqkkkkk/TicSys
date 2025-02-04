@@ -12,7 +12,7 @@ import com.example.ticsys.account.dto.response.SignInRepsonse;
 import com.example.ticsys.account.service.AuthService;
 
 @RestController
-@RequestMapping("/account/auth")
+@RequestMapping("/api/account/auth")
 public class AuthController {
     private final AuthService authService;
     @Autowired

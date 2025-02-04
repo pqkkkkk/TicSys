@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    background-color: #2e2e2e;
+}
+
+.content {
+    margin-left: 250px; /* Width of the sidebar */
+    padding: 20px;
+    width: calc(100% - 250px);
+}

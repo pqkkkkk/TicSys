@@ -1,0 +1,51 @@
+.register-organizer-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.register-organizer {
+    background-color: #1e1e1e;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+}
+
+.register-organizer-title h1 {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.register-organizer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.register-organizer-input-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.register-organizer-label {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.register-organizer-input {
+    background-color: #2c2c2c;
+    border-radius: 4px;
+}
+
+.register-organizer-input input,
+.register-organizer-input .MuiOutlinedInput-root {
+    color: #ffffff;
+}

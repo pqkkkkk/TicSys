@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.example.ticsys.account.model.OrganizerInfo;
 import com.example.ticsys.account.model.User;
 import com.example.ticsys.account.rowmapper.UserRowMapper;
 
@@ -94,6 +96,28 @@ public class UserSqlDao implements IUserDao {
             SELECT roleName FROM RoleOfUser WHERE userId = :username
         """;
         return namedParameterJdbcTemplate.queryForList(roleSql, Map.of("username", username), String.class);
+    }
+    @Override
+    public boolean AddOrganizerInfo(OrganizerInfo organizerInfo) {
+       String sql = """
+            INSERST INTO organizer_infor (userId, name, description) values (:userId, :name, :description)
+       """;
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("userId", organizerInfo.getUserId());
+        paramMap.put("name", organizerInfo.getName());
+        paramMap.put("description", organizerInfo.getDescription());
+
+        return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
+    }
+    @Override
+    public boolean UpdateAvatarOfUser(String username, String avatarPath) {
+        String sql = """
+            UPDATE users SET avatarPath = :avatarPath WHERE username = :username
+        """;
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("username", username);
+        paramMap.put("avatarPath", avatarPath);
+        return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
     }
 
 }
