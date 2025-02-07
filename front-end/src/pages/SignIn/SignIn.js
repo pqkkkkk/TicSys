@@ -1,5 +1,5 @@
 import React from "react";
-import "./SignIn.css";
+import styles from "./SignIn.module.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SignInApi } from "../../services/api/AccountApi";
@@ -34,22 +34,22 @@ function SignIn() {
     };
 }
   return (
-    <div className="container">
-      <div className="left-section">
-        <div className="app-name">
+    <div className={styles["container"]}>
+      <div className={styles["left-section"]}>
+        <div className={styles["app-name"]}>
           <h1>TicSys</h1>
         </div>
         <main>
-          <div className="welcome-text">
+          <div className={styles["welcome-text"]}>
             <h2>Log in to your Account</h2>
             <p>Welcome back! Select method to log in:</p>
           </div>
-          <div className="social-login">
+          <div className={styles["social-login"]}>
             <button>Google</button>
             <button>Facebook</button>
           </div>
           <p>or continue with username</p>
-          <div className="login-form">
+          <div className={styles["login-form"]}>
                 <label htmlFor="username">Username</label>
                 <input
                     value={username}
@@ -61,12 +61,8 @@ function SignIn() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)} 
                     type="password" id="password" placeholder="Enter your password" />
-                <div className="options">
-                <div className="remember-me">
-                    <input type="checkbox" name="remember" id="remember" />
-                    <label htmlFor="remember">Remember me?</label>
-                </div>
-                <div className="forgot-password">
+                <div className={styles["options"]}>
+                <div className={styles["forgot-password"]}>
                     <a href="#">Forgot Password?</a>
                 </div>
                 </div>

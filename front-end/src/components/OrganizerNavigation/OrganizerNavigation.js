@@ -1,20 +1,21 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "./OrganizerNavigation.css";
+import styles from "./OrganizerNavigation.module.css";
 function OrganizerNavigation() {
     return (
-        <aside className="left-sidebar">
-            <h1 className="logo">eventbee</h1>
-            <nav className="nav">
+        <aside className={styles["left-sidebar"]}>
+            <h1 className={styles["logo"]}>eventbee</h1>
+            <nav className={styles["nav"]}>
                 <ul>
-                    <li className="nav-item">
-                        <NavLink to="/organizer/create_event" activeClassName="active" className="link">Create event</NavLink>
+                    <li className={styles["nav-item"]}>
+                        <NavLink to="/organizer/create_event" activeClassName={styles["active"]} className={styles["link"]}>Create event</NavLink>
                     </li>
-                    <li className="nav-item">
-                        <NavLink to="/organizer/events" activeClassName="active" className="link">Events</NavLink>
+                    
+                    <li className={styles["nav-item"]}>
+                        <NavLink to="/organizer/events" activeClassName={styles["active"]} className={styles["link"]}>Events</NavLink>
                     </li>
-                    <li className="nav-item">
-                        <NavLink to="/organizer/profile" activeClassName="active" className="link">Profile</NavLink>
+                    <li className={styles["nav-item"]}>
+                        <NavLink to="/organizer/profile" activeClassName={styles["active"]} className={styles["link"]}>Profile</NavLink>
                     </li>
                 </ul>
             </nav>

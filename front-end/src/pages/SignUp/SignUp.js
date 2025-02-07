@@ -1,7 +1,7 @@
 import { InputLabel, TextField } from "@mui/material";
 import React from "react";
 import { useState,useEffect } from "react";
-import "./SignUp.css";
+import styles from "./SignUp.module.css"
 import { createTheme } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -53,58 +53,58 @@ function SignUp() {
     });
     return (
         <ThemeProvider theme={darkTheme}>
-            <div className="sign-up-page">
-                <div className="sign-up">
-                    <div className="title">
+            <div className={styles["sign-up-page"]}>
+                <div className={styles["sign-up"]}>
+                    <div className={styles["title"]}>
                         <h1>Sign Up</h1>
                     </div>
-                    <div className="form">
-                    <div className="input-item">
-                            <InputLabel className="label" htmlFor="username">Full name</InputLabel>
+                    <div className={styles["form"]}>
+                    <div className={styles["input-item"]}>
+                            <InputLabel className={styles["label"]} htmlFor="username">Full name</InputLabel>
                             <TextField
                                 value={fullname} onChange={(e) => setFullname(e.target.value)} 
-                                className="input" id="fullname" label="Full name" variant="outlined" />
+                                className={styles["input"]} id="fullname" label="Full name" variant="outlined" />
                         </div>
-                        <div className="input-item">
-                            <InputLabel className="label" htmlFor="username">Username</InputLabel>
+                        <div className={styles["input-item"]}>
+                            <InputLabel className={styles["label"]} htmlFor="username">Username</InputLabel>
                             <TextField 
                                 value={username} onChange={(e) => setUsername(e.target.value)}
-                                className="input" id="username" label="Username" variant="outlined" />
+                                className={styles["input"]} id="username" label="Username" variant="outlined" />
                         </div>
-                        <div className="input-item">
-                            <InputLabel className="label" htmlFor="email">Email</InputLabel>
+                        <div className={styles["input-item"]}>
+                            <InputLabel className={styles["label"]} htmlFor="email">Email</InputLabel>
                             <TextField 
                                 value={email} onChange={(e) => setEmail(e.target.value)}
-                                className="input" id="email" label="Email" variant="outlined" />
+                                className={styles["input"]} id="email" label="Email" variant="outlined" />
                         </div>
-                        <div className="input-item">
-                            <InputLabel className="label" htmlFor="password">Password</InputLabel>
+                        <div className={styles["input-item"]}>
+                            <InputLabel className={styles["label"]} htmlFor="password">Password</InputLabel>
                             <TextField 
                                 value={password} onChange={(e) => setPassword(e.target.value)}
-                                className="input" type="password" id="password" label="Password" variant="outlined" />
+                                className={styles["input"]} type="password" id="password" label="Password" variant="outlined" />
                         </div>
-                        <div className="input-item">
-                            <InputLabel className="label" htmlFor="phone">Phone Number</InputLabel>
+                        <div className={styles["input-item"]}>
+                            <InputLabel className={styles["label"]} htmlFor="phone">Phone Number</InputLabel>
                             <TextField 
                                 value={phone} onChange={(e) => setPhone(e.target.value)}
-                                className="input" id="phone" label="Phone Number" variant="outlined" />
+                                className={styles["input"]} id="phone" label="Phone Number" variant="outlined" />
                         </div>
-                        <div className="input-item">
-                            <InputLabel className="label" htmlFor="gender">Gender</InputLabel>
+                        <div className={styles["input-item"]}>
+                            <InputLabel className={styles["label"]} htmlFor="gender">Gender</InputLabel>
                             <TextField 
                                 value={gender} onChange={(e) => setGender(e.target.value)}
-                                className="input" id="gender" label="Gender" variant="outlined" />
+                                className={styles["input"]} id="gender" label="Gender" variant="outlined" />
                         </div>
-                        <div className="input-item">
-                            <InputLabel className="label" htmlFor="birthday">Birthday</InputLabel>
+                        <div className={styles["input-item"]}>
+                            <InputLabel className={styles["label"]} htmlFor="birthday">Birthday</InputLabel>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DatePicker 
                                     value={birthday} onChange={(newDate) => setBirthday(newDate)}
-                                    className="input" id="birthday"/>
+                                    className={styles["input"]} id="birthday"/>
                             </LocalizationProvider>
                         </div>
                     </div>
-                    <div className="button">
+                    <div className={styles["button"]}>
                         <button onClick={HandleSignUp}>Sign Up</button>
                     </div>
                 </div>

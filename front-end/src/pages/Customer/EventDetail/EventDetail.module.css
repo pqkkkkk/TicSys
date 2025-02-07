@@ -1,0 +1,122 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+}
+.event-header {
+    background-color: #1f2937;
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+    gap: 16px; /* Add gap between elements */
+}
+.event-header .details {
+    padding: 16px;
+    flex: 1;
+}
+.event-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+.event-header p {
+    margin: 8px 0;
+}
+.event-header .price {
+    color: #10b981;
+    font-weight: bold;
+}
+.event-header button {
+    background-color: #4b5563;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: not-allowed;
+    margin-top: 16px;
+}
+.event-header img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    object-fit: cover;
+}
+@media (min-width: 768px) {
+    .event-header {
+        flex-direction: row;
+    }
+    .event-header .details {
+        flex: 2;
+    }
+    .event-header img {
+        flex: 1;
+        width: 100%;
+        height: auto;
+    }
+}
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.about, .ticket-info, .organizer {
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.about h2, .ticket-info h2, .organizer h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+.about p, .ticket-info p, .organizer p {
+    margin: 8px 0;
+}
+.ticket-info .ticket {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.ticket-info .ticket:last-child {
+    margin-bottom: 0;
+}
+.ticket-info .ticket .price {
+    color: #ef4444;
+    font-weight: bold;
+}
+.ticket-info .ticket button {
+    background-color: #4b5563;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: not-allowed;
+}
+.organizer .info {
+    display: flex;
+    align-items: center;
+}
+.organizer img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.organizer .info .text {
+    margin-left: 16px;
+}
+@media (min-width: 768px) {
+    .event-header {
+        flex-direction: row;
+    }
+    .event-header .details {
+        flex: 2;
+    }
+    .event-header img {
+        flex: 1;
+        height: auto;
+    }
+}

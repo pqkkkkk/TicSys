@@ -5,11 +5,14 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.example.ticsys.event.dto.request.EventRequest;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.service.EventService;
@@ -22,11 +25,11 @@ public class EventController {
         this.eventService = eventService;
     }
     @PostMapping
-    public ResponseEntity<EventResponse> CreateEvent(@ModelAttribute Event event,
+    public ResponseEntity<EventResponse> CreateEvent(@ModelAttribute EventRequest eventRequest,
                                         @RequestParam("banner") MultipartFile banner,
                                         @RequestParam("seatMap") MultipartFile seatMap)
     {
-        return ResponseEntity.ok(eventService.CreateEvent(event, banner, seatMap));
+        return ResponseEntity.ok(eventService.CreateEvent(eventRequest, banner, seatMap));
     }
     @GetMapping
     public ResponseEntity<List<Event>> GetEvents(@RequestParam (required = false) String category,
@@ -35,7 +38,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.GetEvents(category, status));
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Event> GetEventById(@RequestParam int id)
+    public ResponseEntity<Event> GetEventById(@PathVariable int id)
     {
         return ResponseEntity.ok(eventService.GetEventById(id));
     }

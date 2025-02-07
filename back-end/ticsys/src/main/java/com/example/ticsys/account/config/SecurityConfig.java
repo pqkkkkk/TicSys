@@ -29,7 +29,7 @@ public class SecurityConfig {
                 //.requestMatchers("/account/user/**").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/api/account/user").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/account/user").hasRole("ADMIN")
-                .requestMatchers("api/event/**").permitAll()
+                .requestMatchers("/api/event/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 ->

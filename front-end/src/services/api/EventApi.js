@@ -19,6 +19,15 @@ export const CreateEventApi = async (event) => {
         console.log(err);
     }
 }
+export const GetEventByIdApi = async (eventId) => {
+    try{
+        const response = await api.get(`/event/${eventId}`);
+        return response.data;
+    }
+    catch(err){
+        console.log(err);
+    }
+}
 export const GetEventsApi = async () => {
     try{
         const response = await api.get("/event");

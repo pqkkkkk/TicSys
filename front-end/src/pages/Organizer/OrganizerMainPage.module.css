@@ -6,7 +6,8 @@
 }
 
 .content {
-    margin-left: 250px; /* Width of the sidebar */
-    padding: 20px;
-    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 5px;
+    width: calc(100%);
 }
+

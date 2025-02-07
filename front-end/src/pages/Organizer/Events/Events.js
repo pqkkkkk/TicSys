@@ -1,5 +1,5 @@
 import React from "react";
-import "./Events.css";
+import styles from "./Events.module.css";
 import { GetEventsApi } from "../../../services/api/EventApi";
 import { useEffect, useState } from "react";
 import { Button, createTheme, Menu, MenuItem, ThemeProvider } from "@mui/material";
@@ -31,27 +31,27 @@ function Events() {
     return (
         <ThemeProvider theme={darkTheme}>
             <main>
-                <div className="search-bar">
+                <div className={styles["search-bar"]}>
                     <input type="text" placeholder="Search events"/>
                     <button>Search</button>
                 </div>
 
                 <section>
-                    <div className="status-filter-bar">
+                    <div className={styles["status-filter-bar"]}>
                         <p>Upcoming</p>
                         <p>Previous</p>
                         <p>Cancelled</p>
                     </div>
-                    <div className="event-list">
+                    <div className={styles["event-list"]}>
                         {events.map((event) =>(
-                            <div className="event-card">
+                            <div className={styles["event-card"]}>
                             <img src={event.bannerPath} alt="Event Image"/>
-                            <div className="event-details">
-                                <h3 className="event-name">{event.name}</h3>
-                                <p className="event-location">Location: {event.location}</p>
-                                <p className="event-time">Time: {event.date} - {event.time}</p>
+                            <div className={styles["event-details"]}>
+                                <h3 className={styles["event-name"]}>{event.name}</h3>
+                                <p className={styles["event-location"]}>Location: {event.location}</p>
+                                <p className={styles["event-time"]}>Time: {event.date} - {event.time}</p>
                             </div>
-                            <div className="event-actions">
+                            <div className={styles["event-actions"]}>
                                 <Button
                                     onClick={handleClick}
                                     variant="contained">Actions</Button>
