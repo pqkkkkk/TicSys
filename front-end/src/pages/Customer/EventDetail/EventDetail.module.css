@@ -62,9 +62,10 @@
     gap: 24px;
 }
 .about, .ticket-info, .organizer {
+    background-color: #1b1b1b;
     padding: 16px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(54, 49, 49, 0.1);
 }
 .about h2, .ticket-info h2, .organizer h2 {
     font-size: 20px;
@@ -73,6 +74,31 @@
 }
 .about p, .ticket-info p, .organizer p {
     margin: 8px 0;
+}
+
+.ticket-info .book-now-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #2d3748;
+
+    .text {
+        display: flex;
+        align-items: center;
+        color: white;
+    }
+    .text i {
+        margin-right: 8px;
+    }
+    .book-now-button {
+        background-color: #38a169;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 }
 .ticket-info .ticket {
     display: flex;

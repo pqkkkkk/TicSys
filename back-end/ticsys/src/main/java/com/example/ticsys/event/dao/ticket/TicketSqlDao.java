@@ -20,7 +20,8 @@ public class TicketSqlDao implements ITicketDao{
     @Override
     public boolean AddTicket(Ticket ticket) {
         String sql = """
-            INSERT INTO ticket (eventId, price, quantity, service, name, minQtyInOrder, maxQtyInOrder, colorHex)
+            INSERT INTO ticket (eventId, price, quantity, service, name, minQtyInOrder, maxQtyInOrder)
+            VALUES (:eventId, :price, :quantity, :service, :name, :minQtyInOrder, :maxQtyInOrder)
                 """;
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("eventId", ticket.getEventId());
@@ -30,7 +31,6 @@ public class TicketSqlDao implements ITicketDao{
         paramMap.put("name", ticket.getName());
         paramMap.put("minQtyInOrder", ticket.getMinQtyInOrder());
         paramMap.put("maxQtyInOrder", ticket.getMaxQtyInOrder());
-        paramMap.put("colorHex", ticket.getColorHex());
         return jdbcTemplate.update(sql, paramMap) > 0;
     }
 

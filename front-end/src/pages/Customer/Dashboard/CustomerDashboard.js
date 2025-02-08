@@ -16,7 +16,7 @@ function CustomerDashboard() {
     };
     fetchEvents();
   }, []);
-
+  
   const HandleClickEventCard = (eventId) => {
     navigate(`/${eventId}`);
   };

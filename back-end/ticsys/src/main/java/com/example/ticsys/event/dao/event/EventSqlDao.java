@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.ticsys.event.model.Event;
@@ -19,7 +23,7 @@ public class EventSqlDao implements IEventDao {
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
-    public boolean CreateEvent(Event event) {
+    public int CreateEvent(Event event) {
         String sql = """
             INSERT INTO event (name,organizerId, location, description, bannerPath, seatMapPath, status, category, date, time)
             VALUES (:name,:organizerId, :location, :description, :bannerPath, :seatMapPath, :status, :category, :date, :time)
@@ -36,7 +40,18 @@ public class EventSqlDao implements IEventDao {
         params.put("date", event.getDate());
         params.put("time", event.getTime());
 
-        return jdbcTemplate.update(sql, params) > 0;
+        SqlParameterSource parameterSource = new MapSqlParameterSource(params);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int updateCount =  jdbcTemplate.update(sql, parameterSource, keyHolder, new String[] {"id"});
+
+        if(updateCount > 0){
+            Number key = keyHolder.getKey();
+            if (key != null) {
+                int eventId = key.intValue();
+                return eventId;
+            }
+        }
+        return -1;
     }
 
     @Override

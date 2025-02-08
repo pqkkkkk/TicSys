@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.ticsys.event.dao.event.IEventDao;
 import com.example.ticsys.event.dto.request.EventRequest;
+import com.example.ticsys.event.dto.response.EventDetailResponse;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.media.CloudinaryService;
@@ -27,7 +28,9 @@ public class EventServiceImplV1 implements EventService {
         {
             eventRequest.getEvent().setBannerPath(bannerPath);
             eventRequest.getEvent().setSeatMapPath(seatMapPath);
-            if(eventDao.CreateEvent(eventRequest.getEvent()))
+
+            int eventId = eventDao.CreateEvent(eventRequest.getEvent());
+            if(eventId > 0)
             {
                 return EventResponse.builder().message("success").build();
             }
@@ -48,5 +51,10 @@ public class EventServiceImplV1 implements EventService {
     public List<Event> GetEvents(String category, String status)
     {
         return eventDao.GetEvents(category, status);
+    }
+    @Override
+    public EventDetailResponse GetEventDetail(int eventId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'GetEventDetail'");
     }
 }

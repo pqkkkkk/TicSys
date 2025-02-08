@@ -23,7 +23,6 @@ public class TicketRowMapper implements RowMapper<Ticket> {
         ticket.setName(rs.getString("name"));
         ticket.setMinQtyInOrder(rs.getInt("minQtyInOrder"));
         ticket.setMaxQtyInOrder(rs.getInt("maxQtyInOrder"));
-        ticket.setColorHex(rs.getString("colorHex"));
         return ticket;
     }
 
