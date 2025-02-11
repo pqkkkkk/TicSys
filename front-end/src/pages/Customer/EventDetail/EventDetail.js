@@ -1,12 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styles from "./EventDetail.module.css"
 import { GetEventDetailByIdApi } from "../../../services/api/EventApi";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 function EventDetail()
 {
+    const navigate = useNavigate();
     const {eventId} = useParams();
     const [event, setEvent] = useState({});
     const [tickets, setTickets] = useState([]);
@@ -26,6 +27,9 @@ function EventDetail()
         }
     }, [tickets]);
 
+    const HandleBookNow = () => {
+        navigate(`/booking/${eventId}/select-ticket`);
+    }
     return (
         <div className={styles["container"]}>
 
@@ -52,7 +56,7 @@ function EventDetail()
                             <i class="fas fa-chevron-down"></i>
                             <span>{event.time} - {event.date}</span>
                         </div>
-                        <button className={styles["book-now-button"]}>Book now</button>
+                        <button onClick={HandleBookNow} className={styles["book-now-button"]}>Book now</button>
                     </div>
 
                     {tickets.map((ticket) => (

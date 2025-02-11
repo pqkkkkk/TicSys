@@ -1,13 +1,9 @@
-package com.example.ticsys.event.dao.ticket;
+package com.example.ticsys.event;
 
 import java.util.List;
 import java.util.Map;
 
-import com.example.ticsys.event.model.Ticket;
-
-public interface ITicketDao {
-    boolean AddTicket(Ticket ticket);
-    List<Ticket> GetTicketsOfEvent(int eventId);
+public interface PublicEventService {
     Map<String, Object> GetTicketByRequiredFieldsList(List<String> requiredFields, int id);
     int UpdateTicketByRequiredFieldsList(Map<String, Object> newValues, int id);
 }

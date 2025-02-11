@@ -2,6 +2,7 @@ package com.example.ticsys.event.dao.ticket;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,6 +24,7 @@ public class TicketSqlDao implements ITicketDao{
             INSERT INTO ticket (eventId, price, quantity, service, name, minQtyInOrder, maxQtyInOrder)
             VALUES (:eventId, :price, :quantity, :service, :name, :minQtyInOrder, :maxQtyInOrder)
                 """;
+        
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("eventId", ticket.getEventId());
         paramMap.put("price", ticket.getPrice());
@@ -31,6 +33,7 @@ public class TicketSqlDao implements ITicketDao{
         paramMap.put("name", ticket.getName());
         paramMap.put("minQtyInOrder", ticket.getMinQtyInOrder());
         paramMap.put("maxQtyInOrder", ticket.getMaxQtyInOrder());
+
         return jdbcTemplate.update(sql, paramMap) > 0;
     }
 
@@ -39,10 +42,41 @@ public class TicketSqlDao implements ITicketDao{
         String sql = """
             SELECT * FROM ticket WHERE eventId = :eventId
                 """;
+        
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("eventId", eventId);
 
         return jdbcTemplate.query(sql,paramMap, new TicketRowMapper());
+    }
+    @Override
+    public Map<String, Object> GetTicketByRequiredFieldsList(List<String> requiredFields, int id) {
+        String fieldStr = String.join(", ", requiredFields);
+        String sql = "SELECT " + fieldStr + " FROM ticket WHERE id = :id";
+
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", id);
+
+        return jdbcTemplate.queryForMap(sql, paramMap);
+    }
+    @Override
+    public int UpdateTicketByRequiredFieldsList(Map<String, Object> newValues, int id) {
+        if(newValues.isEmpty()){
+            return -1;
+        }
+
+        String sql = "UPDATE ticket SET ";
+        for (Map.Entry<String, Object> entry : newValues.entrySet()) {
+            sql += entry.getKey() + " = :" + entry.getKey() + ", ";
+        }
+        sql = sql.substring(0, sql.length() - 2);
+        sql += " WHERE id = :id";
+
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", id);
+        paramMap.putAll(newValues);
+
+        int result =  jdbcTemplate.update(sql, paramMap);
+        return result;
     }
 
 }

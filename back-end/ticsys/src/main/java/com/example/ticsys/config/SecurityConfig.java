@@ -1,4 +1,4 @@
-package com.example.ticsys.account.config;
+package com.example.ticsys.config;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -26,10 +26,12 @@ public class SecurityConfig {
             .formLogin(formLogin -> formLogin.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/account/auth/**").permitAll()
-                //.requestMatchers("/account/user/**").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/api/account/user").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/account/user").hasRole("ADMIN")
                 .requestMatchers("/api/event/**").permitAll()
+                .requestMatchers("/api/order/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 ->

@@ -7,6 +7,7 @@ import CustomerMainPage from './pages/Customer/CustomerMainPage';
 import OrganizerMainPage from './pages/Organizer/OrganizerMainPage';
 import SignUp from './pages/SignUp/SignUp';
 import RegisterOrganizer from './pages/RegisterOrganizer/RegisterOrganizer';
+import Error from './pages/Error/Error';
 function App() {
   return (
     <Router>
@@ -16,6 +17,7 @@ function App() {
         <Route path="/signin" Component={SignIn} />
         <Route path="/signup" Component={SignUp} />
         <Route path="/become-organizer" Component={RegisterOrganizer} />
+        <Route path="/error" Component={Error} />
       </Routes>
     </Router>
   );
