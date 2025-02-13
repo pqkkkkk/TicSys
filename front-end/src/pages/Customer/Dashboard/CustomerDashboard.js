@@ -12,11 +12,11 @@ function CustomerDashboard() {
   useEffect(() => {
     const fetchEvents = async () => {
       const data = await GetEventsApi();
-      setEvents(data);
+      setEvents(data.eventDtos);
     };
     fetchEvents();
   }, []);
-  
+
   const HandleClickEventCard = (eventId) => {
     navigate(`/${eventId}`);
   };
@@ -41,10 +41,10 @@ function CustomerDashboard() {
         <h2>Top Picks for You</h2>
         <div className={styles["top-picks"]}>
           {events.map((event) =>(
-            <div onClick={() => HandleClickEventCard(event.id)} className={styles["dashboard-event-card"]}>
-                <img src={event.bannerPath} alt="Event 1"/>
-                <p className={styles["event-name"]}>{event.name}</p>
-                <p className={styles["event-time"]}>{event.date}  {event.time}</p>
+            <div onClick={() => HandleClickEventCard(event.event.id)} className={styles["dashboard-event-card"]}>
+                <img src={event.event.bannerPath} alt="Event 1"/>
+                <p className={styles["event-name"]}>{event.event.name}</p>
+                <p className={styles["event-time"]}>{event.event.date}  {event.event.time}</p>
                 <p className={styles["event-price"]}>From 300,000₫</p>
             </div>
           ))}

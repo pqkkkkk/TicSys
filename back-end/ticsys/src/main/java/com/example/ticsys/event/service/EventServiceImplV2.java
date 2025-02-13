@@ -1,6 +1,9 @@
 package com.example.ticsys.event.service;
 
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -11,8 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.ticsys.event.dao.event.IEventDao;
 import com.example.ticsys.event.dao.ticket.ITicketDao;
+import com.example.ticsys.event.dto.EventDto;
 import com.example.ticsys.event.dto.request.EventRequest;
-import com.example.ticsys.event.dto.response.EventDetailResponse;
+import com.example.ticsys.event.dto.response.GetEventsResponse;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.model.Ticket;
@@ -67,28 +71,48 @@ public class EventServiceImplV2 implements EventService {
     }
 
     @Override
-    public Event GetEventById(int id) {
-        return eventDao.GetEventById(id);
-    }
-
-    @Override
-    public List<Event> GetEvents(String category, String status) {
-        return eventDao.GetEvents(category, status);
-    }
-    @Override
-    public EventDetailResponse GetEventDetail(int eventId) {
+    public EventDto GetEventById(int id, String includeStr) {
         try{
-            Event event = eventDao.GetEventById(eventId);
-            List<Ticket> tickets = ticketDao.GetTicketsOfEvent(eventId);
+            Event event = eventDao.GetEventById(id);
+            EventDto eventDto = EventDto.builder().event(event).build();
 
-            return EventDetailResponse.builder()
-                    .message("success")
-                    .event(event).tickets(tickets).build();
+            if(includeStr != null && includeStr.contains("tickets")){
+                List<Ticket> tickets = ticketDao.GetTicketsOfEvent(event.getId());
+                eventDto.setTickets(tickets);
+            }
+
+            return eventDto;
+        }
+        catch(Exception e)
+        {
+            return null;
+        }
+    }
+
+    @Override
+    public GetEventsResponse GetEvents(String includeStr, Map<String, Object> filterMap) {
+        try{
+            List<EventDto> eventDtos = new ArrayList<>();
+            List<Event> events = eventDao.GetEvents(null, null);
+
+            for(Event event : events)
+            {
+                EventDto eventDto = new EventDto();
+                eventDto.setEvent(event);
+
+                if(includeStr != null && includeStr.contains("tickets")){
+                    List<Ticket> tickets = ticketDao.GetTicketsOfEvent(event.getId());
+                    eventDto.setTickets(tickets);
+                }
+
+                eventDtos.add(eventDto);
+            }
+
+            return GetEventsResponse.builder().message("success").eventDtos(eventDtos).build();
         }
         catch (Exception e)
         {
-            return EventDetailResponse.builder().message(e.getMessage()).build();
+            return GetEventsResponse.builder().message(e.getMessage()).eventDtos(null).build();
         }
     }
-
 }

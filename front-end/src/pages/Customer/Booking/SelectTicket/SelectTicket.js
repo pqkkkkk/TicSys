@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import styles from "./SelectTicket.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import { GetEventDetailByIdApi } from "../../../../services/api/EventApi";
+import { GetEventWithTicketsByIdApi } from "../../../../services/api/EventApi";
 import { GetUser } from "../../../../services/UserStorageService";
 import {format} from 'date-fns';
 import { CreateOrderApi } from "../../../../services/api/OrderApi";
@@ -11,6 +11,7 @@ function SelectTicket() {
     const navigate = useNavigate();
     const {eventId} = useParams();
     const currentUser = GetUser();
+
     const [event, setEvent] = useState({});
     const [tickets, setTickets] = useState([]);
     const [order, setOrder] = useState({
@@ -25,7 +26,7 @@ function SelectTicket() {
 
     useEffect(() => {
         const fetchEvent = async () => {
-            const data = await GetEventDetailByIdApi(eventId);
+            const data = await GetEventWithTicketsByIdApi(eventId);
             setEvent(data.event);
             setTickets(data.tickets.map(ticket => ({...ticket, qtyInOrder: 0})));
         }

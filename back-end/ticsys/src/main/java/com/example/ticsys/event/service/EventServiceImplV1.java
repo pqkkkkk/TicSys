@@ -1,13 +1,14 @@
 package com.example.ticsys.event.service;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.ticsys.event.dao.event.IEventDao;
+import com.example.ticsys.event.dto.EventDto;
 import com.example.ticsys.event.dto.request.EventRequest;
-import com.example.ticsys.event.dto.response.EventDetailResponse;
+import com.example.ticsys.event.dto.response.GetEventsResponse;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.media.CloudinaryService;
@@ -44,17 +45,20 @@ public class EventServiceImplV1 implements EventService {
             return EventResponse.builder().message("file error").build();
         }
     }
-    public Event GetEventById(int id)
+    public EventDto GetEventById(int id, String includeStr)
     {
-        return eventDao.GetEventById(id);
+        try{
+            Event event = eventDao.GetEventById(id);
+            EventDto eventDto = EventDto.builder().event(event).build();
+            return eventDto;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
-    public List<Event> GetEvents(String category, String status)
+    public GetEventsResponse GetEvents(String includeStr, Map<String, Object> filterMap)
     {
-        return eventDao.GetEvents(category, status);
-    }
-    @Override
-    public EventDetailResponse GetEventDetail(int eventId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'GetEventDetail'");
+        return null;
     }
 }

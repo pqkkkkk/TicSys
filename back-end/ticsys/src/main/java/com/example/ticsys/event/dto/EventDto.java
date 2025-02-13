@@ -1,4 +1,4 @@
-package com.example.ticsys.event.dto.response;
+package com.example.ticsys.event.dto;
 
 import java.util.List;
 
@@ -14,8 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDetailResponse {
+public class EventDto {
     Event event;
     List<Ticket> tickets;
-    String message;
 }

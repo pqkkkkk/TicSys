@@ -16,9 +16,8 @@ function Events() {
     useEffect(() => {
         const FetchEvents = async () => {
             const response = await GetEventsApi();
-            console.log(response);
             if(response){
-                setEvents(response);
+                setEvents(response.eventDtos);
             }
         }
         FetchEvents();
@@ -45,11 +44,11 @@ function Events() {
                     <div className={styles["event-list"]}>
                         {events.map((event) =>(
                             <div className={styles["event-card"]}>
-                            <img src={event.bannerPath} alt="Event Image"/>
+                            <img src={event.event.bannerPath} alt="Event Image"/>
                             <div className={styles["event-details"]}>
-                                <h3 className={styles["event-name"]}>{event.name}</h3>
-                                <p className={styles["event-location"]}>Location: {event.location}</p>
-                                <p className={styles["event-time"]}>Time: {event.date} - {event.time}</p>
+                                <h3 className={styles["event-name"]}>{event.event.name}</h3>
+                                <p className={styles["event-location"]}>Location: {event.event.location}</p>
+                                <p className={styles["event-time"]}>Time: {event.event.date} - {event.event.time}</p>
                             </div>
                             <div className={styles["event-actions"]}>
                                 <Button

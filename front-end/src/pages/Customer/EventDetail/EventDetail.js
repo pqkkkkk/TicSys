@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./EventDetail.module.css"
-import { GetEventDetailByIdApi } from "../../../services/api/EventApi";
+import { GetEventWithTicketsByIdApi } from "../../../services/api/EventApi";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 function EventDetail()
@@ -15,7 +15,7 @@ function EventDetail()
 
     useEffect(() => {
         const fetchEvent = async () => {
-            const data = await GetEventDetailByIdApi(eventId);
+            const data = await GetEventWithTicketsByIdApi(eventId);
             setEvent(data.event);
             setTickets(data.tickets);
         };

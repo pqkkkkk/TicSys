@@ -1,6 +1,8 @@
 package com.example.ticsys.event.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.ticsys.event.dto.EventDto;
 import com.example.ticsys.event.dto.request.EventRequest;
-import com.example.ticsys.event.dto.response.EventDetailResponse;
+import com.example.ticsys.event.dto.response.GetEventsResponse;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.model.Ticket;
@@ -50,19 +53,37 @@ public class EventController {
         }
     }
     @GetMapping
-    public ResponseEntity<List<Event>> GetEvents(@RequestParam (required = false) String category,
-                                         @RequestParam (required = false) String status)
+    public ResponseEntity<GetEventsResponse> GetEvents( @RequestParam (value = "include",required = false) String includeStr,
+                                        @RequestParam (required = false) String category,
+                                        @RequestParam (required = false) String status)
     {
-        return ResponseEntity.ok(eventService.GetEvents(category, status));
+         Map<String,Object> filterMap = new HashMap<>();
+        if(category != null){
+            filterMap.put("category", category);
+        }
+        if(status != null){
+            filterMap.put("status", status);
+        }
+       
+        GetEventsResponse result = eventService.GetEvents(includeStr, filterMap);
+
+        if (result.getMessage().equals("success")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
+            
+        }
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Event> GetEventById(@PathVariable int id)
+    public ResponseEntity<EventDto> GetEventById(@PathVariable int id,
+                                 @RequestParam (value = "include",required = false) String includeStr)
     {
-        return ResponseEntity.ok(eventService.GetEventById(id));
-    }
-    @GetMapping("/{id}/detail")
-    public ResponseEntity<EventDetailResponse> GetEventDetail(@PathVariable int id)
-    {
-        return ResponseEntity.ok(eventService.GetEventDetail(id));
+        EventDto result = eventService.GetEventById(id, includeStr);
+
+        if (result != null) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
+        }
     }
 }

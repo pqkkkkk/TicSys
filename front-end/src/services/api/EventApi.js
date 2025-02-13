@@ -28,9 +28,9 @@ export const GetEventByIdApi = async (eventId) => {
         console.log(err);
     }
 }
-export const GetEventDetailByIdApi = async (eventId) => {
+export const GetEventWithTicketsByIdApi = async (eventId) => {
     try{
-        const response = await api.get(`/event/${eventId}/detail`);
+        const response = await api.get(`/event/${eventId}?include=tickets`);
         return response.data;
     }
     catch(err){
@@ -42,6 +42,7 @@ export const GetEventsApi = async () => {
         const response = await api.get("/event");
         return response.data;
     }
+
     catch(err){
         console.log(err);
     }
