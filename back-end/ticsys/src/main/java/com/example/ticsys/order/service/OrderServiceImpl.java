@@ -9,11 +9,10 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.example.ticsys.event.PublicEventService;
 import com.example.ticsys.order.dao.order.IOrderDao;
 import com.example.ticsys.order.dao.ticketoforder.ITicketOfOrderDao;
+import com.example.ticsys.order.dto.OrderDto;
 import com.example.ticsys.order.dto.request.CreateOrderRequest;
-import com.example.ticsys.order.dto.request.GetFilteredOrdersRequest;
 import com.example.ticsys.order.dto.response.CreateOrderResponse;
-import com.example.ticsys.order.dto.response.GetDetailOrderResponse;
-import com.example.ticsys.order.dto.response.GetFilteredOrdersResponse;
+import com.example.ticsys.order.dto.response.GetOrdersResponse;
 import com.example.ticsys.order.model.Order;
 import com.example.ticsys.order.model.TicketOfOrder;
 
@@ -59,14 +58,37 @@ public class OrderServiceImpl implements OrderService  {
     }
 
     @Override
-    public Order GetOrderById(int id) {
+    public OrderDto GetOrderById(int id, String includeStr) {
         try{
+            OrderDto orderDto = new OrderDto();
             Order order = orderDao.GetOrderById(id);
-            if(order == null)
-            {
-                throw new Exception("Order not found");
+            orderDto.setOrder(order);
+
+            if(includeStr != null){
+                if(includeStr.contains("event")) {
+                    Map<String, Object> event = publicEventService.GetEventByRequiredFieldsList(List.of("id", "name","bannerPath", "date", "time", "location","organizerId"), order.getEventId());
+                    orderDto.setEvent(event);
+                }
+                if(includeStr.contains("ticketOfOrders") && includeStr.contains("ticket")) {
+                    List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(id);
+                    List<Map<String, Object>> ticketInfos = new ArrayList<>();
+
+                    for (TicketOfOrder ticketOfOrder : ticketOfOrders)
+                    {
+                        Map<String, Object> ticketInfo = publicEventService.GetTicketByRequiredFieldsList(List.of("id", "name", "price", "service"), ticketOfOrder.getTicketId());
+                        ticketInfos.add(ticketInfo);
+                    }
+                    orderDto.setTicketOfOrders(ticketOfOrders);
+                    orderDto.setTicketInfos(ticketInfos);
+                }
+                else if (includeStr.contains("ticketOfOrders"))
+                {
+                    List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(id);
+                    orderDto.setTicketOfOrders(ticketOfOrders);
+                    orderDto.setTicketInfos(null);
+                }
             }
-            return order;
+            return orderDto;
         }
         catch (Exception e)
         {
@@ -76,45 +98,50 @@ public class OrderServiceImpl implements OrderService  {
     }
 
     @Override
-    public GetFilteredOrdersResponse GetFilteredOrders(GetFilteredOrdersRequest getFilteredOrdersRequest) {
+    public GetOrdersResponse GetOrders(String includeStr, Map<String,Object> filterMap) {
         try{
-            List<Order> orders = orderDao.GetOrders(getFilteredOrdersRequest.getUserId(),
-                    getFilteredOrdersRequest.getDateCreated(),
-                    getFilteredOrdersRequest.getTimeCreated(),
-                     getFilteredOrdersRequest.getStatus());
 
-            return GetFilteredOrdersResponse.builder().orders(orders).message("success").build();
-        }
-        catch (Exception e)
-        {
-            return GetFilteredOrdersResponse.builder().message(e.getMessage()).build();
-        }
-    }
+            List<OrderDto> orderDtos = new ArrayList<>();
+            List<Order> orders = orderDao.GetOrders(null, null, null, null, 0);
 
-    @Override
-    public GetDetailOrderResponse GetDetailOrderById(int id) {
-        try{
-            Order order = orderDao.GetOrderById(id);
-            List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(id);
-            List<Map<String, Object>> ticketInfos = new ArrayList<>();
+            if(includeStr != null){
+               for(Order order : orders){
+                OrderDto orderDto = new OrderDto();
+                orderDto.setOrder(order);
 
-            List<String> requiredFields = List.of("id", "name", "price", "service");
-            for (TicketOfOrder ticketOfOrder : ticketOfOrders)
-            {
-                Map<String, Object> ticketInfo = publicEventService.GetTicketByRequiredFieldsList(requiredFields, ticketOfOrder.getTicketId());
-                ticketInfos.add(ticketInfo);
+                if(includeStr.contains("event")) {
+                    Map<String, Object> event = publicEventService.GetEventByRequiredFieldsList(List.of("id", "name","bannerPath", "date", "time", "location","organizerId"), order.getEventId());
+                    orderDto.setEvent(event);
+                }
+                if(includeStr.contains("ticketOfOrders") && includeStr.contains("ticket")) {
+                    List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(order.getId());
+                    List<Map<String, Object>> ticketInfos = new ArrayList<>();
+
+                    for (TicketOfOrder ticketOfOrder : ticketOfOrders)
+                    {
+                        Map<String, Object> ticketInfo = publicEventService.GetTicketByRequiredFieldsList(List.of("id", "name", "price", "service"), ticketOfOrder.getTicketId());
+                        ticketInfos.add(ticketInfo);
+                    }
+                    orderDto.setTicketOfOrders(ticketOfOrders);
+                    orderDto.setTicketInfos(ticketInfos);
+                }
+                else if (includeStr.contains("ticketOfOrders"))
+                {
+                    List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(order.getId());
+                    orderDto.setTicketOfOrders(ticketOfOrders);
+                    orderDto.setTicketInfos(null);
+                }
+
+                orderDtos.add(orderDto);
+               }
             }
-
-            return GetDetailOrderResponse.builder().message("success").order(order)
-                                                    .ticketInfos(ticketInfos)     
-                                                    .ticketOfOrders(ticketOfOrders).build();
+            return GetOrdersResponse.builder().message("success").orderDtos(orderDtos).build();
         }
         catch (Exception e)
         {
-            return GetDetailOrderResponse.builder().message(e.getMessage()).build();
+            return GetOrdersResponse.builder().orderDtos(null).message(e.getMessage()).build();
         }
     }
-
     @Override
     @Transactional
     public String ReserveOrder(int id) {

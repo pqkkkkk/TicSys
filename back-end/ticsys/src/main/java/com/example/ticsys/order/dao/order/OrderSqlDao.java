@@ -64,7 +64,8 @@ public class OrderSqlDao implements IOrderDao {
     }
 
     @Override
-    public List<Order> GetOrders(String userId, LocalDate dateCreated, Time timeCreated, String status) {
+    public List<Order> GetOrders(String userId, LocalDate dateCreated,
+                     Time timeCreated, String status, int eventId) {
         String sql = "SELECT * FROM [order] WHERE 1=1 ";
         Map<String, Object> paramMap = new HashMap<>();
 
@@ -84,7 +85,7 @@ public class OrderSqlDao implements IOrderDao {
             sql += "AND status = :status ";
             paramMap.put("status", status);
         }
-
+        
         return jdbcTemplate.query(sql, paramMap, new OrderRowMapper());
     }
     @Override

@@ -26,9 +26,33 @@ export const GetOrderByIdApi = async (orderId) => {
         throw error;
     }
 }
-export const GetDetailOrderByIdApi = async (orderId) => {
+export const GetFilteredOrdersApi = async (request) => {
     try {
-        const response = await api.get(`/order/${orderId}/detail`);
+        const response = await api.get(`/order`, request);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const GetOrderByIdWithDetailOrderAndTicketApi = async (orderId) => {
+    try {
+        const response = await api.get(`/order/${orderId}?include=ticketOfOrders,ticket`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const GetOrderByIdWithDetailOrderApi = async (orderId) => {
+    try {
+        const response = await api.get(`/order/${orderId}?include=ticketOfOrders`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const GetOrderByIdWithDetailOrderAndTicketApiAndEvent = async (orderId) => {
+    try {
+        const response = await api.get(`/order/${orderId}?include=ticketOfOrders,ticket,event`);
         return response.data;
     } catch (error) {
         throw error;

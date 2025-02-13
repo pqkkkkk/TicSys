@@ -10,6 +10,6 @@ public interface IOrderDao {
     public int CreateOrder(Order order);
     public Order GetOrderById(int id);
     public List<Order> GetOrders(String userId, LocalDate dateCreated
-                        , Time timeCreated, String status);
+                        , Time timeCreated, String status, int eventId);
     public boolean UpdateOrderStatus(int id, String status);
 }

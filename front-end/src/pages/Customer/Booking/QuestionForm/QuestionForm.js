@@ -3,7 +3,7 @@ import styles from "./QuestionForm.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { GetEventByIdApi } from "../../../../services/api/EventApi";
-import { GetDetailOrderByIdApi } from "../../../../services/api/OrderApi";
+import { GetOrderByIdWithDetailOrderAndTicketApi } from "../../../../services/api/OrderApi";
 import { GetUser } from "../../../../services/UserStorageService";
 function QuestionForm() {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ function QuestionForm() {
     useEffect(() => {
         const fetchEvent = async () => {
             const [eventData, orderData] = await Promise.all([GetEventByIdApi(eventId),
-                                                         GetDetailOrderByIdApi(orderId)]);
+                                            GetOrderByIdWithDetailOrderAndTicketApi(orderId)]);
             
             if(orderData.order.status === "PAID") {
                 navigate("/error");

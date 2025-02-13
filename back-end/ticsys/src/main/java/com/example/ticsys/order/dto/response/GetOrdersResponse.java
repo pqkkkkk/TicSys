@@ -1,10 +1,8 @@
 package com.example.ticsys.order.dto.response;
 
 import java.util.List;
-import java.util.Map;
 
-import com.example.ticsys.order.model.Order;
-import com.example.ticsys.order.model.TicketOfOrder;
+import com.example.ticsys.order.dto.OrderDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +15,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class GetDetailOrderResponse {
+public class GetOrdersResponse {
+    List<OrderDto> orderDtos;
     String message;
-    Order order;
-    List<TicketOfOrder> ticketOfOrders;
-    List<Map<String,Object>> ticketInfos;
 }

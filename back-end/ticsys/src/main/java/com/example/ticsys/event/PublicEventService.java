@@ -5,5 +5,7 @@ import java.util.Map;
 
 public interface PublicEventService {
     Map<String, Object> GetTicketByRequiredFieldsList(List<String> requiredFields, int id);
+    Map<String, Object> GetEventByRequiredFieldsList(List<String> requiredFields, int id);
     int UpdateTicketByRequiredFieldsList(Map<String, Object> newValues, int id);
+
 }

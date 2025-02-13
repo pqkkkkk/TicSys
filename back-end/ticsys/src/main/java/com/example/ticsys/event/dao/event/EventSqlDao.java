@@ -75,5 +75,16 @@ public class EventSqlDao implements IEventDao {
         }
         return jdbcTemplate.query(sql, params, new EventRowMapper());
     }
+    @Override
+    public Map<String, Object> GetEventByRequiredFieldsList(List<String> requiredFields, int id) {
+        
+        String fieldStr = String.join(", ", requiredFields);
+        String sql = "SELECT " + fieldStr + " FROM [event] WHERE id = :id";
+
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", id);
+
+        return jdbcTemplate.queryForMap(sql, paramMap);
+    }
 
 }

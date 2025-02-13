@@ -7,7 +7,7 @@ import vietQRLogo from "../../../../assets/image/vietQRLogo.png";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { GetEventByIdApi } from "../../../../services/api/EventApi";
-import { GetDetailOrderByIdApi, ReverseOrderApi } from "../../../../services/api/OrderApi";
+import { GetOrderByIdWithDetailOrderAndTicketApi, ReverseOrderApi } from "../../../../services/api/OrderApi";
 import { GetUser } from "../../../../services/UserStorageService";
 function PaymentInfo() {
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ function PaymentInfo() {
     useEffect(() => {
         const fetchEvent = async () => {
             const [eventData, orderData] = await Promise.all([GetEventByIdApi(eventId),
-                                                            GetDetailOrderByIdApi(orderId)]);
+                                                            GetOrderByIdWithDetailOrderAndTicketApi(orderId)]);
             if(orderData.order.status === "PAID")
             {
                 navigate("/error");
