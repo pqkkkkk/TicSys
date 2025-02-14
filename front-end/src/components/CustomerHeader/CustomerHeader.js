@@ -29,7 +29,7 @@ function CustomerHeader() {
           )}
           {user &&(
             <li>
-              <NavLink to="/tickets" activeClassName={styles["active"]}  className={styles["link"]}>Tickets</NavLink>
+              <NavLink to="/orders" activeClassName={styles["active"]}  className={styles["link"]}>Tickets</NavLink>
             </li>
           )}
           {user &&(

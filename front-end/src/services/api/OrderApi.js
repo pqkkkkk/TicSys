@@ -26,9 +26,17 @@ export const GetOrderByIdApi = async (orderId) => {
         throw error;
     }
 }
-export const GetFilteredOrdersApi = async (request) => {
+export const GetOrdersWithDetailOrderAndTicketAndEventApi = async () => {
     try {
-        const response = await api.get(`/order`, request);
+        const response = await api.get(`/order?include=ticketOfOrders,ticket,event`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const GetOrdersWithEventApi = async () => {
+    try {
+        const response = await api.get(`/order?include=event`);
         return response.data;
     } catch (error) {
         throw error;
@@ -50,7 +58,7 @@ export const GetOrderByIdWithDetailOrderApi = async (orderId) => {
         throw error;
     }
 }
-export const GetOrderByIdWithDetailOrderAndTicketApiAndEvent = async (orderId) => {
+export const GetOrderByIdWithDetailOrderAndTicketAndEventApi = async (orderId) => {
     try {
         const response = await api.get(`/order/${orderId}?include=ticketOfOrders,ticket,event`);
         return response.data;

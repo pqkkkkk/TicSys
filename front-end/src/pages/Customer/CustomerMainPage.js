@@ -7,13 +7,15 @@ import styles from "./CustomerMainPage.module.css";
 import SelectTicket from "./Booking/SelectTicket/SelectTicket";
 import QuestionForm from "./Booking/QuestionForm/QuestionForm";
 import PaymentInfo from "./Booking/PaymentInfo/PaymentInfo";
-import MyTicket from "./MyTicket/MyTicket";
+import MyOrder from "./MyOrder/MyOrder";
+import DetailOrder from "./DetailOrder/DetailOrder";
 function CustomerMainPage() {
   return (
         <div className={styles["container"]}>
             <CustomerHeader/>
             <Routes>
-                <Route  path="tickets" Component={MyTicket}/>
+                <Route path="orders" Component={MyOrder}/>
+                <Route path="orders/:orderId" Component={DetailOrder}/>
                 <Route path="profile" Component={CustomerDashboard}/>
                 <Route exact path="" Component={CustomerDashboard}/>
                 <Route path="/:eventId" Component={EventDetail}/>
