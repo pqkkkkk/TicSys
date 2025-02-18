@@ -13,7 +13,11 @@ import com.example.ticsys.account.dao.IUserDao;
 import com.example.ticsys.account.model.OrganizerInfo;
 import com.example.ticsys.account.model.User;
 import com.example.ticsys.media.CloudinaryService;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final IUserDao userDao;
@@ -28,7 +32,14 @@ public class UserService {
         return userDao.GetAllUsers(role);
     }
     public User GetUserByUsername(String username) {
-        return userDao.getUserByUsername(username);
+        log.info("GetUserByUsername of UserService");
+        try{
+            return userDao.getUserByUsername(username);
+        }
+        catch(Exception e){
+            log.error("Error in GetUserByUsername of UserService: " + e.getMessage());
+            return null;
+        }
     }
     @Transactional
     public boolean CreateUser(User user) {

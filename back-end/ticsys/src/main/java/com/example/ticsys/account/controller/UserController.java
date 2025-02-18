@@ -18,8 +18,11 @@ import com.example.ticsys.account.model.OrganizerInfo;
 import com.example.ticsys.account.model.User;
 import com.example.ticsys.account.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/account/user")
+@Slf4j
 public class UserController {
     private final UserService userService;
     @Autowired
@@ -28,6 +31,7 @@ public class UserController {
     }
     @GetMapping("/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        log.info("getUserByUsername of UserController, username: ", username);
         User user = userService.GetUserByUsername(username);
         if(user == null) {
             return ResponseEntity.notFound().build();

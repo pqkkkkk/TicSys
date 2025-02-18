@@ -16,7 +16,7 @@ select * from event;
 select * from Ticket;
 select * from TicketOfOrder;
 select * from [Order];
-
+select * from Comment;
 
 alter table event alter column description nvarchar(max);
 

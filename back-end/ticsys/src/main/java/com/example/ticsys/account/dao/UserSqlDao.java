@@ -12,7 +12,10 @@ import com.example.ticsys.account.model.OrganizerInfo;
 import com.example.ticsys.account.model.User;
 import com.example.ticsys.account.rowmapper.UserRowMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Repository
+@Slf4j
 public class UserSqlDao implements IUserDao {
     
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -22,6 +25,7 @@ public class UserSqlDao implements IUserDao {
     }
     @Override
     public User getUserByUsername(String username) {
+        log.info("getUserByUsername of UserSqlDao");
         try{
             String sql = """
                 SELECT * FROM users WHERE username = :username

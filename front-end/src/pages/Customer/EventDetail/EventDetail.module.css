@@ -134,6 +134,95 @@
 .organizer .info .text {
     margin-left: 16px;
 }
+.comment-item{
+    margin-bottom: 16px;
+}
+.comment-container {
+    background-color: #e5e5e5;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.comment-container h2 {
+    color: #1b1b1b;
+}
+.reply-box{
+    margin-left:30px;
+}
+.input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.input-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+.input-container input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-right: 10px;
+}
+.comment {
+    background-color: #454545;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+}
+.comment .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.comment .header img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+.comment .header .info {
+    flex-grow: 1;
+}
+.comment .header .info p {
+    margin: 0;
+}
+.comment .header .info .name {
+    font-weight: bold;
+}
+.comment .header .info .time {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+.comment .header .options {
+    color: #6b7280;
+}
+.comment .content {
+    margin-bottom: 8px;
+}
+.comment .actions {
+    display: flex;
+    align-items: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+.comment .actions i {
+    margin-right: 4px;
+}
+.comment .actions button {
+    margin-left: 16px;
+    color: #3b82f6;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.reply-container {
+    margin-left: 48px;
+}
 @media (min-width: 768px) {
     .event-header {
         flex-direction: row;
