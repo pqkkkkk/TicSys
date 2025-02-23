@@ -36,3 +36,11 @@ delete from TicketOfOrder where id = 4;
 
 alter table [order] drop column quantity;
 
+
+alter table comment add dateCreatedAt date default '2025-02-18';
+alter table comment add timeCreatedAt time default '16:00:00';
+
+ INSERT INTO [comment] (content, senderId, eventId, parentId,dateCreatedAt, timeCreatedAt)
+values ('Is this event interesting?', 'pqkiet854', 18, null, GETDATE(), GETDATE());
+
+delete from Comment where id = 30;

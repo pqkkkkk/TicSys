@@ -44,7 +44,7 @@ header {
     color: #fff;
 }
 
-nav ul {
+header nav ul {
     display: flex;
     align-items: center;
     list-style: none;
@@ -52,7 +52,7 @@ nav ul {
     margin: 0;
 }
 
-nav ul li {
+header nav ul li {
     margin: 0 15px;
 }
 

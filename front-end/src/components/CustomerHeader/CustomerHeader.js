@@ -20,6 +20,7 @@ function CustomerHeader() {
           <button onClick={() => navigate("/become-organizer")}>Become organizer</button>
         </div>
       )}
+      
       <nav>
         <ul>
           {!user && (

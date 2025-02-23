@@ -1,52 +1,57 @@
-.left-sidebar {
-    width: 250px;
-    height: 100vh;
-    background-color: #333;
-    color: white;
+.sidebar{
     display: flex;
     flex-direction: column;
-    align-items: center;
     position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    background: #2d3748;
+    z-index: 100;
+    transition: all 0.5s ease;
 }
-
-.logo {
-    font-size: 24px;
+.sidebar .logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+.sidebar .logo img {
+    margin-right: 10px;
+}
+.sidebar .logo span {
+    color: #48bb78;
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 20px;
 }
-
-.nav {
-    width: 100%;
-}
-
-.nav ul {
+.sidebar .nav {
     display: flex;
     flex-direction: column;
+}
+.sidebar nav ul {
     list-style: none;
     padding: 0;
-    margin: 0;
-    width: 100%;
 }
-
-.nav-item {
-    margin: 10px 0;
-}
-
-.link {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    display: block;
+.sidebar nav ul .nav-item {
+    font-size: large;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
     padding: 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
 }
-
-.link:hover {
-    background-color: #555;
+.sidebar nav ul .nav-item a {
+    color: #a0aec0;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
 }
-
-.link.active {
-    background-color: #555;
-    font-weight: bold;
+.sidebar nav ul .nav-item i{
+    margin-right: 10px;
+}
+.sidebar nav ul .nav-item .link{
+    font-weight: lighter;
+}
+.sidebar nav .nav-item-active {
+    background: #4a5568;
+    border-radius: 5px;
 }
