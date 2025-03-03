@@ -3,8 +3,9 @@ import styles from "./QuestionForm.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { GetEventByIdApi } from "../../../../services/api/EventApi";
-import { GetOrderByIdWithDetailOrderAndTicketApi } from "../../../../services/api/OrderApi";
+import { GetOrderByIdWithDetailOrderAndTicketAndPromotionApi } from "../../../../services/api/OrderApi";
 import { GetUser } from "../../../../services/UserStorageService";
+
 function QuestionForm() {
     const navigate = useNavigate();
     const {eventId, orderId} = useParams();
@@ -15,10 +16,11 @@ function QuestionForm() {
     const [ticketOfOrders, setTicketOfOrders] = useState([]);
     const [ticketInfos, setTicketInfos] = useState([]);
     const [totalTickets, setTotalTickets] = useState(0);
+    const [promotionInfo, setPromotionInfo] = useState({});
     useEffect(() => {
         const fetchEvent = async () => {
             const [eventData, orderData] = await Promise.all([GetEventByIdApi(eventId),
-                                            GetOrderByIdWithDetailOrderAndTicketApi(orderId)]);
+                                            GetOrderByIdWithDetailOrderAndTicketAndPromotionApi(orderId)]);
             
             if(orderData.order.status === "PAID") {
                 navigate("/error");
@@ -27,6 +29,7 @@ function QuestionForm() {
             setOrder(orderData.order);
             setTicketOfOrders(orderData.ticketOfOrders);
             setTicketInfos(orderData.ticketInfos);
+            setPromotionInfo(orderData.promotionInfo);
             setEvent(eventData);
         }
         fetchEvent();
@@ -63,10 +66,10 @@ function QuestionForm() {
         <div className={styles["header"]}>
         <div className={styles["container"]}>
             <div>
-                <h1>{event.name}</h1>
+                <h1>{event?.event?.name}</h1>
                 <div className={styles["info"]}>
-                    <div><i class="fas fa-map-marker-alt"></i>{event.location}</div>
-                    <div><i class="fas fa-calendar-alt"></i>{event.time} - {event.date}</div>
+                    <div><i class="fas fa-map-marker-alt"></i>{event?.event?.location}</div>
+                    <div><i class="fas fa-calendar-alt"></i>{event?.event?.time} - {event?.event?.date}</div>
                 </div>
             </div>
             <div className={styles["timer"]}>
@@ -114,15 +117,27 @@ function QuestionForm() {
                             <span>{ticketOfOrder.quantity}</span>
                         </div>
                         <div className={styles["ticket-info"]}>
-                            <span>{ticketInfos.at(index).price} đ</span>
-                            <span>{ticketInfos.at(index).price * ticketOfOrder.quantity} đ</span>
+                            <span>{ticketInfos.at(index).price?.toLocaleString('vi-VN')} đ</span>
+                            <span>{(ticketInfos.at(index).price * ticketOfOrder.quantity).toLocaleString('vi-VN')} đ</span>
                         </div>
                         <div className={styles["ticket-info-divider"]}></div>
                     </div>
                 ))}
+                <div className={styles["actual-price"]}>
+                    <span>Actual Price</span>
+                    <span className={styles["amount"]}> {promotionInfo ?  (order.price + promotionInfo.reduction).toLocaleString('vi-VN') : order.price.toLocaleString('vi-VN')} đ</span>
+                </div>
+                {promotionInfo?.type === "Flash Sale" && <div className={styles["promotion-info"]}>
+                    <span>Promotion</span>
+                    <span className={styles["amount"]}> - {promotionInfo.reduction.toLocaleString('vi-VN')} đ</span>
+                </div> }
+                {promotionInfo?.type === "Voucher Gift" &&  <div className={styles["promotion-info"]}>
+                    <span>Promotion</span>
+                    <span className={styles["amount"]}> Voucher {promotionInfo.voucherValue.toLocaleString('vi-VN')} đ</span>
+                </div> }
                 <div className={styles["subtotal"]}>
                     <span>Subtotal {totalTickets} ticket</span>
-                    <span className={styles["amount"]}>{order.price} đ</span>
+                    <span className={styles["amount"]}>{order?.price?.toLocaleString('vi-VN')} đ</span>
                 </div>
                 <p className={styles["required-message"]}>Please answer all questions to continue</p>
                 <button onClick={HandleContinue} className={styles["continue-btn"]}>Continue <i class="fas fa-arrow-right"></i></button>

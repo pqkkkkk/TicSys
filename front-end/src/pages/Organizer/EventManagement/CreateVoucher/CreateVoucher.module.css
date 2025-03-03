@@ -97,6 +97,10 @@
 .section .radio-group input {
     margin-right: 8px;
 }
+.promotion-type {
+    display: flex;
+    gap: 16px;
+}
 .footer {
     display: flex;
     justify-content: flex-end;

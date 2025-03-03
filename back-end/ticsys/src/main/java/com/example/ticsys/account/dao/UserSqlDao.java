@@ -24,7 +24,7 @@ public class UserSqlDao implements IUserDao {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
     @Override
-    public User getUserByUsername(String username) {
+    public User GetUserByUsername(String username) {
         log.info("getUserByUsername of UserSqlDao");
         try{
             String sql = """

@@ -15,7 +15,7 @@ function EventDetail()
 
     const [event, setEvent] = useState({});
     const [tickets, setTickets] = useState([]);
-    const [minPriceOfTickets, setMinPriceOfTickets] = useState(0);
+    const [minPriceOfTicket, setMinPriceOfTicket] = useState(0);
     const [comments, setComments] = useState([]);
     const [enteredComment, setEnteredComment] = useState("");
     const [enteredReply, setEnteredReply] = useState("");
@@ -25,7 +25,7 @@ function EventDetail()
             let [eventData, commentData] = await Promise.all([GetEventWithTicketsByIdApi(eventId), GetCommentsApi(null,eventId,null)]);
             setEvent(eventData.event);
             setTickets(eventData.tickets);
-
+            setMinPriceOfTicket(eventData.minPriceOfTicket);
             commentData = commentData.map(comment => {
                 return {
                     ...comment,
@@ -38,11 +38,6 @@ function EventDetail()
         };
         fetchEvent();
     }, [eventId]);
-    useEffect(() => {
-        if(tickets.length > 0){
-            setMinPriceOfTickets(Math.min(...tickets.map(ticket => ticket.price)));
-        }
-    }, [tickets]);
 
     const HandleBookNow = () => {
         navigate(`/booking/${eventId}/select-ticket`);
@@ -137,7 +132,7 @@ function EventDetail()
                     <h1>{event.name}</h1>
                     <p><i class="far fa-calendar-alt"></i>{event.time} - {event.date} </p>
                     <p><i class="fas fa-map-marker-alt"></i> {event.location}</p>
-                    <p className={styles["price"]}>From {minPriceOfTickets} đ</p>
+                    <p className={styles["price"]}>From {minPriceOfTicket?.toLocaleString('vi-VN')} đ</p>
                     <button disabled>Online booking closed</button>
                 </div>
                 <img src={event.bannerPath} alt="Event banner"/>
@@ -165,7 +160,7 @@ function EventDetail()
                                 <p class="font-semibold">{ticket.service}</p>
                             </div>
                             <div className={styles["text-right"]}>
-                                <p className={styles["price"]}>{ticket.price} đ</p>
+                                <p className={styles["price"]}>{ticket?.price?.toLocaleString('vi-VN')} đ</p>
                                 <button disabled>Online booking closed</button>
                             </div>
                         </div>

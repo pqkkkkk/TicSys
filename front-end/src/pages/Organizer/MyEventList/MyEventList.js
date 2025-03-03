@@ -19,8 +19,8 @@ function MyEventList() {
             }
             FetchEvents();
     },[]);
-    const HanleNavigateToEventManagement = () => {
-        navigate(`/organizer/myevents/1`);
+    const HanleNavigateToEventManagement = (eventId) => {
+        navigate(`/organizer/myevents/${eventId}`);
     }
     return (
         <div className={styles["main-content"]}>
@@ -42,7 +42,7 @@ function MyEventList() {
             </div>
             <div className={styles["event-list"]}>
                 {events.map((event) => (
-                <div className={styles["event-item"]} onClick={HanleNavigateToEventManagement}>
+                <div className={styles["event-item"]} onClick={() => HanleNavigateToEventManagement(event.event.id)}>
                     <div className={styles["event-header"]}>
                         <img src={event.event.bannerPath} alt="Event Image" width="100" height="60"/>
                         <div>

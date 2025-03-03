@@ -35,7 +35,7 @@ public class UserService {
     public User GetUserByUsername(String username) {
         log.info("GetUserByUsername of UserService");
         try{
-            return userDao.getUserByUsername(username);
+            return userDao.GetUserByUsername(username);
         }
         catch(Exception e){
             log.error("Error in GetUserByUsername of UserService: " + e.getMessage());

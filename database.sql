@@ -12,6 +12,7 @@ GO
 USE TicSys;
 GO
 
+
 CREATE TABLE Role (
     name NVARCHAR(50) PRIMARY KEY
 );
@@ -48,7 +49,7 @@ CREATE TABLE Event (
     ID INT PRIMARY KEY IDENTITY(1,1),
     organizerId nvarchar(50) NOT NULL,
     location NVARCHAR(255),
-    description NVARCHAR(1000),
+    description NVARCHAR(max),
     bannerPath NVARCHAR(255),
     seatMapPath NVARCHAR(255),
     name NVARCHAR(100),
@@ -58,18 +59,15 @@ CREATE TABLE Event (
     time TIME
 );
 
-CREATE TABLE TicketType (
-    name NVARCHAR(50) PRIMARY KEY
-);
-
 CREATE TABLE Ticket (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     eventId INT NOT NULL,
-    type NVARCHAR(50) NOT NULL,
     name NVARCHAR(100),
     service NVARCHAR(255),
     price INT NOT NULL,
-    quantity INT NOT NULL
+    quantity INT NOT NULL,
+    minQtyInOrder INT default 1,
+    maxQtyInOrder INT default 5
 );
 
 CREATE TABLE PromotionType (
@@ -87,7 +85,12 @@ CREATE TABLE Promotion (
     startDate DATE,
     endDate DATE
 );
-
+CREATE TABLE VoucherOfUser (
+	id int primary key identity(1,1),
+	voucherValue int,
+	userId nvarchar(50),
+	promotionId int,
+)
 CREATE TABLE [Order] (
     ID INT PRIMARY KEY IDENTITY(1,1),
     price INT NOT NULL,
@@ -95,7 +98,6 @@ CREATE TABLE [Order] (
     eventId INT NOT NULL,
     DateCreatedAt DATE,
     TimeCreatedAt TIME,
-    quantity INT NOT NULL,
     status NVARCHAR(50),
     promotionId INT
 );
@@ -119,7 +121,9 @@ CREATE TABLE Comment (
     content NVARCHAR(1000),
     senderId nvarchar(50) NOT NULL,
     eventId INT NOT NULL,
-    parentId INT NULL
+    parentId INT NULL,
+    dateCreatedAt DATE default '2025-02-25',
+    timeCreatedAt TIME default '16:00:00'
 );
 
 alter TABLE RoleOfUser add FOREIGN KEY (userId) REFERENCES Users(userName);
@@ -128,7 +132,6 @@ alter TABLE Organizer_infor add FOREIGN KEY (userId) REFERENCES Users(userName);
 alter TABLE [Event] add FOREIGN KEY (organizerId) REFERENCES Users(userName);
 alter TABLE [Event] add FOREIGN KEY (category) REFERENCES Category(name);
 alter TABLE Ticket add FOREIGN KEY (eventId) REFERENCES Event(ID);
-alter TABLE Ticket add FOREIGN KEY (type) REFERENCES TicketType(name);
 alter TABLE Promotion add FOREIGN KEY (eventId) REFERENCES Event(ID);
 alter TABLE Promotion add FOREIGN KEY (type) REFERENCES PromotionType(name);
 alter TABLE [Order] add FOREIGN KEY (createdBy) REFERENCES Users(userName);
@@ -141,3 +144,5 @@ alter TABLE [Notification] add FOREIGN KEY (eventId) REFERENCES Event(ID);
 alter TABLE Comment add FOREIGN KEY (senderId) REFERENCES Users(userName);
 alter TABLE Comment add FOREIGN KEY (eventId) REFERENCES Event(ID);
 alter TABLE Comment add FOREIGN KEY (parentId) REFERENCES Comment(ID);
+alter TABLE VoucherOfUser add FOREIGN KEY (userId) REFERENCES Users(userName);
+alter TABLE VoucherOfUser add FOREIGN KEY (promotionId) REFERENCES Promotion(id);

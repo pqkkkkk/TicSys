@@ -1,12 +1,101 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./CreateVoucher.module.css";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { CreatePromotion, UpdatePromotion } from "../../../../services/api/PromotionApi";
+function CreateVoucher({initialPromotion}){
+    const navigate = useNavigate();
+    const [promotion, setPromotion] = useState({
+        eventId:2,
+        minPriceToReach: 0,
+        promoPercent: 0,
+        voucherValue:0,
+        type: "Voucher Gift",
+        startDate: "",
+        endDate: "",
+    });
+    const [isEditing, setIsEditing] = useState(false);
+    const [isReadyForAction, setIsReadyForAction] = useState(false);
+    const [isValidPromotion, setIsValidPromotion] = useState(false);
 
-function CreateVoucher(){
+    useEffect(() => {
+        if(initialPromotion){
+            setPromotion(initialPromotion);
+            setIsEditing(true);
+        }
+    }, [initialPromotion]);
+
+    useEffect(() => {
+        const validStartDate = promotion?.startDate.match(/^\d{4}-\d{2}-\d{2}$/);
+        const validEndDate = promotion?.endDate.match(/^\d{4}-\d{2}-\d{2}$/);
+
+        if(promotion?.type === "Voucher Gift"){
+            if(promotion?.voucherValue > 0 && validEndDate && validStartDate){
+                setIsValidPromotion(true);
+            }
+            else{
+                setIsValidPromotion(false);
+            }
+        }
+        else if (promotion?.type === "Flash Sale"){
+            if(promotion?.promoPercent > 0  && validEndDate && validStartDate){
+                setIsValidPromotion(true);
+            }
+            else{
+                setIsValidPromotion(false);
+            }
+        }
+    }, [promotion]);
+    useEffect(() => {
+        if(isReadyForAction){
+            if(isValidPromotion){
+                if(isEditing){
+                    HandleUpdatePromotion();
+                }
+                else{
+                    HandleCreatePromotion();
+                }
+            }
+            else{
+                alert("Promotion information is not valid");
+                setIsReadyForAction(false);
+            }
+        }
+    }, [promotion, isReadyForAction, isValidPromotion]);
+
+    const HandleBack = () => {
+        navigate(-1);
+    }
+    const HandleUpdatePromotion = async () => {
+        const response = await UpdatePromotion(promotion);
+
+        if(response > 0){
+            alert("Update promotion successfully");
+            navigate(-1);
+        }
+        else{
+            alert("Update promotion failed");
+        }
+    };
+    const HandleCreatePromotion = async () => {
+        const response = await CreatePromotion(promotion);
+
+        if(response > 0){
+            alert("Create promotion successfully");
+            navigate(-1);
+        }
+        else{
+            alert("Create promotion failed");
+        }
+    };
+    const HandleChangePromotionType = (e) => {
+        setPromotion({...promotion, type: e.target.value, promoPercent: 0, minPriceToReach: 0,voucherValue: 0});
+    }
     return (
         <div className={styles["create-voucher-container"]}>
-            <div className={styles["header"]}>
+            <div onClick={HandleBack} className={styles["header"]}>
                 <button><i class="fas fa-arrow-left"></i></button>
-                <h1>Tạo voucher mới</h1>
+                <h1>{isEditing? "Update Promotion" : "Create Promotion"}</h1>
             </div>
             <div className={styles["grid"]}>
                 <div className={styles["card"]}>
@@ -20,43 +109,54 @@ function CreateVoucher(){
                     <button>Chọn</button>
                 </div>
             </div>
+    
             <div className={styles["section"]}>
-                <h2>Thông tin cơ bản</h2>
-                <label>Tên chương trình khuyến mãi:</label>
-                <input type="text" placeholder="Nhập tên chương trình khuyến mãi"/>
-                <p>Tên chương trình sẽ hiển thị cho người mua</p>
-                <label>Mã voucher:</label>
-                <input type="text" placeholder="Nhập mã voucher"/>
-                <p>Chỉ cho phép những giá trị sau (A-Z and 0-9), tối thiểu 6 và tối đa 12 ký tự</p>
-                <label>Thời gian sử dụng mã:</label>
-                <div className={styles["flex"]}>
-                    <input type="text" placeholder="Start date"/>
-                    <input type="text" placeholder="End date"/>
-                </div>
-            </div>
-            <div className={styles["section"]}>
-                <h2>Thiết lập mã voucher</h2>
-                <label>Loại khuyến mãi:</label>
-                <div className={styles["flex"]}>
-                    <select>
-                        <option>Theo số tiền</option>
+                <h2>Set up promotion</h2>
+                <label>Promotion type:</label>
+                <div className={styles["promotion-type"]}>
+                    <select
+                        disabled={isEditing}
+                        value={promotion.type} 
+                        onChange={(e) => HandleChangePromotionType(e)}>
+                        <option>Voucher Gift</option>
+                        <option>Flash Sale</option>
                     </select>
-                    <input type="text" placeholder="Nhập mức giảm"/>
+                    {promotion.type !== "Voucher Gift" &&
+                    <input 
+                        value={promotion.promoPercent}
+                        onChange={(e) => setPromotion({...promotion, promoPercent: e.target.value})}
+                        type="text" placeholder="Enterd reduced rate (%)"/>}
+                    {promotion.type === "Voucher Gift" &&
+                    <input
+                        value={promotion.voucherValue?.toLocaleString('vi-VN')}
+                        onChange={(e) => setPromotion({...promotion, voucherValue: e.target.value})}
+                        type="text" placeholder="Enterd value of voucher"/>}
                 </div>
-                <p>Số vé được khuyến mãi mỗi voucher</p>
-                <label>Số đơn hàng tối đa/Người mua:</label>
-                <input type="text" placeholder="Nhập số đơn hàng tối đa"/>
-                <p>Tổng số đơn hàng mà người mua có thể áp dụng voucher</p>
-                <label>Số lượng vé tối thiểu:</label>
-                <input type="text" placeholder="Nhập số lượng vé tối thiểu"/>
-                <p>Số lượng vé tối thiểu trong đơn hàng để có thể áp dụng mã voucher</p>
-                <label>Số lượng vé tối đa:</label>
-                <input type="text" placeholder="Nhập số lượng vé tối đa"/>
-                <p>Số lượng vé tối đa trong đơn hàng có thể áp dụng mã voucher</p>
+                <label>Time duration:</label>
+                <div className={styles["flex"]}>
+                    <input
+                        value={promotion.startDate}
+                        onChange={(e) => setPromotion({...promotion, startDate: e.target.value})} 
+                        type="text" placeholder="Start date (yyyy-mm-dd)"/>
+                    <input
+                        value={promotion.endDate}
+                        onChange={(e) => setPromotion({...promotion, endDate: e.target.value})} 
+                        type="text" placeholder="End date (yyyy-mm-dd)"/>
+                </div>
+
+                {promotion.type === "Voucher Gift" &&
+                    <label>Minimum price of order to apply promotion: </label>}
+                {promotion.type === "Voucher Gift" &&
+                    <input
+                    value={promotion.minPriceToReach?.toLocaleString('vi-VN')}
+                    onChange={(e) => setPromotion({...promotion, minPriceToReach: e.target.value})} 
+                    type="text" placeholder="Enter price"/>}
             </div>
             <div className={styles["footer"]}>
-                <button className={styles["cancel"]}>Hủy</button>
-                <button className={styles["create"]}>Tạo voucher</button>
+                <button className={styles["cancel"]}>Cancel</button>
+                <button
+                    onClick={() => setIsReadyForAction(true)} 
+                    className={styles["create"]}>{isEditing ? "Update" :"Create"}</button>
             </div>
         </div>
     );

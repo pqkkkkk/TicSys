@@ -7,7 +7,8 @@ import vietQRLogo from "../../../../assets/image/vietQRLogo.png";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { GetEventByIdApi } from "../../../../services/api/EventApi";
-import { GetOrderByIdWithDetailOrderAndTicketApi, ReverseOrderApi } from "../../../../services/api/OrderApi";
+import { GetOrderByIdWithDetailOrderAndTicketAndPromotionApi, ReserveOrderApi } from "../../../../services/api/OrderApi";
+import { GetUnusedVoucherOfUsers } from "../../../../services/api/PromotionApi";
 import { GetUser } from "../../../../services/UserStorageService";
 function PaymentInfo() {
     const navigate = useNavigate();
@@ -19,11 +20,14 @@ function PaymentInfo() {
     const [ticketOfOrders, setTicketOfOrders] = useState([]);
     const [ticketInfos, setTicketInfos] = useState([]);
     const [totalTickets, setTotalTickets] = useState(0);
-
+    const [promotionInfo, setPromotionInfo] = useState({});
+    const [vouchers, setVouchers] = useState([]);
+    const [seletedVoucherId, setSelectedVoucherId] = useState(null);
     useEffect(() => {
         const fetchEvent = async () => {
-            const [eventData, orderData] = await Promise.all([GetEventByIdApi(eventId),
-                                                            GetOrderByIdWithDetailOrderAndTicketApi(orderId)]);
+            const [eventData, orderData, vouchersData] = await Promise.all([GetEventByIdApi(eventId),
+                                                            GetOrderByIdWithDetailOrderAndTicketAndPromotionApi(orderId),
+                                                            GetUnusedVoucherOfUsers(currentUser.userName)]);
             if(orderData.order.status === "PAID")
             {
                 navigate("/error");
@@ -31,6 +35,8 @@ function PaymentInfo() {
             setOrder(orderData.order);
             setTicketOfOrders(orderData.ticketOfOrders);
             setTicketInfos(orderData.ticketInfos);
+            setPromotionInfo(orderData.promotionInfo);
+            setVouchers(vouchersData);
             setEvent(eventData);
         }
         fetchEvent();
@@ -40,8 +46,8 @@ function PaymentInfo() {
     }, [ticketOfOrders]);
 
     const HandlePayment = async () => {
-        const response = await ReverseOrderApi(orderId);
-        console.log(response);
+        const response = await ReserveOrderApi(orderId,seletedVoucherId);
+        console.log(seletedVoucherId);
         if(response)
         {
             if(response === "success"){
@@ -80,10 +86,10 @@ function PaymentInfo() {
 
             <div className={styles["event-info-and-timer"]}>
                 <div className={styles["event-info"]}>
-                    <h1>{event.name}</h1>
+                    <h1>{event?.event?.name}</h1>
                     <div className={styles["details"]}>
-                        <div><i class="fas fa-map-marker-alt"></i>{event.location} </div>
-                        <div><i class="fas fa-calendar-alt"></i>{event.time} - {event.date}</div>
+                        <div><i class="fas fa-map-marker-alt"></i>{event?.event?.location} </div>
+                        <div><i class="fas fa-calendar-alt"></i>{event?.event?.time} - {event?.event?.date}</div>
                     </div>
                 </div>
                 <div className={styles["timer"]}>
@@ -164,8 +170,8 @@ function PaymentInfo() {
                                         <span>{ticketOfOrder.quantity}</span>
                                     </div>
                                     <div className={styles["ticket-info"]}>
-                                        <span>{ticketInfos.at(index).price} đ</span>
-                                        <span>{ticketInfos.at(index).price * ticketOfOrder.quantity} đ</span>
+                                        <span>{ticketInfos.at(index).price?.toLocaleString('vi-VN')} đ</span>
+                                        <span>{(ticketInfos.at(index).price * ticketOfOrder.quantity).toLocaleString('vi-VN')} đ</span>
                                     </div>
                                     <div className={styles["ticket-info-divider"]}></div>
                                 </div>
@@ -180,14 +186,36 @@ function PaymentInfo() {
                             <input type="text" placeholder="ENTER DISCOUNT CODE"/>
                             <button>Apply</button>
                         </div>
+                        <div className={styles["vouchers"]}>
+                            <select
+                                value={seletedVoucherId}
+                                onChange={(e) => setSelectedVoucherId(e.target.value)}
+                                name="vouchers" className={styles["voucher-select"]}>
+                                <option value="" disabled selected>SELECT AVAILABLE VOUCHER OF YOURS</option>
+                                {vouchers.map((voucher) => (
+                                    <option value={voucher.id}>{voucher.voucherValue?.toLocaleString('vi-VN')} đ</option>
+                                ))}
+                            </select>
+                            <button>Apply</button>
+                        </div>
                         <div className={styles["details"]}>
                             <div>
-                                <span>Subtotal</span>
-                                <span>{order.price} đ</span>
+                                <span>Actual price</span>
+                                <span>{promotionInfo ? (order.price + promotionInfo.reduction).toLocaleString('vi-VN') : order.price.toLocaleString('vi-VN')} đ</span>
                             </div>
+                            {promotionInfo?.type === "Flash Sale" && <div>
+                                <span>Promotion</span>
+                                <span>- {promotionInfo.reduction.toLocaleString('vi-VN')} đ</span>
+                            </div>
+                            }
+                             {promotionInfo?.type === "Voucher Gift" && <div>
+                                <span>Promotion</span>
+                                <span>Voucher {promotionInfo.voucherValue.toLocaleString('vi-VN')} đ</span>
+                            </div>
+                            }
                             <div>
                                 <span>Total</span>
-                                <span className={styles["total"]}>{order.price} đ</span>
+                                <span className={styles["total"]}>{order?.price?.toLocaleString('vi-VN')} đ</span>
                             </div>
                         </div>
                         <div className={styles["terms"]}>

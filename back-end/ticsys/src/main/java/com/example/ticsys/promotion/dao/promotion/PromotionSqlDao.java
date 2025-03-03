@@ -1,4 +1,4 @@
-package com.example.ticsys.promotion.dao;
+package com.example.ticsys.promotion.dao.promotion;
 
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +77,7 @@ public class PromotionSqlDao implements IPromotionDao {
     }
 
     @Override
-    public List<Promotion> GetPromotions(int eventId) {
+    public List<Promotion> GetPromotions(int eventId, String status, String type) {
         String sql = "SELECT * FROM [promotion] WHERE 1=1 ";
         Map<String, Object> paramMap = new HashMap<>();
 
@@ -85,7 +85,23 @@ public class PromotionSqlDao implements IPromotionDao {
             sql += "AND eventId = :eventId ";
             paramMap.put("eventId", eventId);
         }
+        if(status != null){
+            sql += "AND status = :status ";
+            paramMap.put("status", status);
+        }
+        if(type != null){
+            sql += "AND type = :type ";
+            paramMap.put("type", type);
+        }
         return jdbcTemplate.query(sql, paramMap, new PromotionRowMapper());
+    }
+
+    @Override
+    public Promotion GetPromotionById(int promotionId) {
+        String sql = "SELECT * FROM [promotion] WHERE id = :id";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", promotionId);
+        return jdbcTemplate.queryForObject(sql, paramMap, new PromotionRowMapper());
     }
 
 }

@@ -6,38 +6,95 @@ import { GetEventWithTicketsByIdApi } from "../../../../services/api/EventApi";
 import { GetUser } from "../../../../services/UserStorageService";
 import {format} from 'date-fns';
 import { CreateOrderApi } from "../../../../services/api/OrderApi";
-
+import { GetPromotionInfosOfEvent } from "../../../../services/api/PromotionApi";
 function SelectTicket() {
     const navigate = useNavigate();
     const {eventId} = useParams();
-    const currentUser = GetUser();
 
+    const [currentUser,setCurrentUser] = useState(GetUser());
     const [event, setEvent] = useState({});
     const [tickets, setTickets] = useState([]);
+    const [totalTickets, setTotalTickets] = useState(0);
+    const [promotionInfos, setPromotionInfos] = useState([]);
+    const [selectedPromotion, setSelectedPromotion] = useState({
+        promotionId: -1,
+        reduction: 0
+    });
     const [order, setOrder] = useState({
         price: 0,
-        createdBy: "pqkiet854",
+        createdBy: currentUser.userName,
         eventId: eventId,
         dateCreatedAt: format(new Date(), 'yyyy-MM-dd'),
         timeCreatedAt: format(new Date(), 'HH:mm:ss'),
         status: "PENDING",
         promotionId: -1
     });
+    const [isReadyForContinue, setIsReadyForContinue] = useState(false);
 
     useEffect(() => {
+        if(!currentUser){
+            navigate("/signin");
+        }
+        console.log("first use Effect");
         const fetchEvent = async () => {
             const data = await GetEventWithTicketsByIdApi(eventId);
             setEvent(data.event);
             setTickets(data.tickets.map(ticket => ({...ticket, qtyInOrder: 0})));
         }
         fetchEvent();
-    }, [eventId]);
+    }, [eventId,navigate,currentUser]);
+    
     useEffect(() => {
         setOrder((prev) => (
             {...prev, price: tickets.reduce((total, ticket) =>
                  total + ticket.price * ticket.qtyInOrder, 0)}));
+        setTotalTickets(tickets.reduce((total, ticket) => total + ticket.qtyInOrder, 0));
     }, [tickets]);
+    useEffect(() => {
+        const fetchPromotionInfos = async () => {
+            const response = await GetPromotionInfosOfEvent(eventId, order.price);
+            console.log(response);
+            setPromotionInfos(response.promotionInfos);
+        }
+        fetchPromotionInfos();
+        setSelectedPromotion({
+            promotionId: -1,
+            reduction: 0
+        });
+    }, [eventId,order]);
+    useEffect(() => {
+        const createOrder = async () => {
+            if(isReadyForContinue){
+                const ticketsOfOrder =  tickets.filter(ticket => ticket.qtyInOrder > 0).map(ticket => ({ticketId: ticket.id, quantity: ticket.qtyInOrder}));
+                const finalOrder ={
+                    ...order,
+                    promotionId: selectedPromotion.promotionId
+                }
+                const createOrderRequest = {
+                    order: finalOrder,
+                    ticketOfOrders: ticketsOfOrder
+                };
 
+                console.log(createOrderRequest);
+
+                const createOrderResponse = await CreateOrderApi(createOrderRequest);
+                if(createOrderResponse){
+                    if(createOrderResponse.message === "success"){
+                        navigate(`/booking/${eventId}/question-form/${createOrderResponse.orderId}`);
+                    }
+                    else{
+                        alert("Error: " + createOrderResponse.message);
+                        return;
+                    }
+                }
+                else {
+                    alert("Error: Can not create order");
+                    return;
+                }
+            }
+        }
+        createOrder();
+    }, [selectedPromotion,order,tickets,isReadyForContinue,eventId,navigate]);
     const HandleTicketQuantityChange = (ticketId, quantity) => {
         setTickets((prev) =>{
             if(prev.some(ticket => ticket.id === ticketId))
@@ -51,28 +108,7 @@ function SelectTicket() {
         window.history.back();
     }
     const HandleContinue = async () => {
-        const ticketsOfOrder =  tickets.filter(ticket => ticket.qtyInOrder > 0).map(ticket => ({ticketId: ticket.id, quantity: ticket.qtyInOrder}));
-        const createOrderRequest = {
-            order: order,
-            ticketOfOrders: ticketsOfOrder
-        };
-
-        console.log(createOrderRequest);
-
-        const createOrderResponse = await CreateOrderApi(createOrderRequest);
-        if(createOrderResponse){
-            if(createOrderResponse.message === "success"){
-                navigate(`/booking/${eventId}/question-form/${createOrderResponse.orderId}`);
-            }
-            else{
-                alert("Error: " + createOrderResponse.message);
-                return;
-            }
-        }
-        else{
-            alert("Error: Can not create order");
-            return;
-        }
+        setIsReadyForContinue(true);
     }
 
     return (
@@ -88,7 +124,7 @@ function SelectTicket() {
                         <h2>{ticket.name}</h2>
                         <div className={styles["ticket-info"]}>
                             <div className={styles["header"]}>
-                                <p>{ticket.price} đ</p>
+                                <p>{ticket.price.toLocaleString('vi-VN')} đ</p>
                             </div>
                             <div className={styles["quantity"]}>
                                     <button
@@ -125,7 +161,22 @@ function SelectTicket() {
                     {tickets.map(ticket => (
                         <div>
                             <span>{ticket.name}</span>
-                            <span> {ticket.price} đ</span>
+                            <span> {ticket.qtyInOrder} x {ticket?.price?.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                    ))}
+                </div>
+                <div className={styles["promotion-infos"]}>
+                    <h3> Promotion</h3>
+                    {promotionInfos?.map(promotionInfo => (
+                        <div className={styles["promotion-info-item"]}>
+                            <div className={styles["radio"]}>
+                                <input disabled={promotionInfo.reduction === 0}
+                                    checked={selectedPromotion.promotionId === promotionInfo.promotion.id}
+                                    onChange={() => setSelectedPromotion((prev) => ({promotionId: promotionInfo.promotion.id, reduction: promotionInfo.reduction}))}
+                                    type="radio" name="promotion"/>
+                                <span>{promotionInfo.promotion.type}</span>
+                            </div>
+                            <span className={styles["reduction"]}> - {promotionInfo.reduction.toLocaleString('vi-VN')} đ</span>
                         </div>
                     ))}
                 </div>
@@ -133,10 +184,10 @@ function SelectTicket() {
             <div className={styles["footer"]}>
                 <div className={styles["tickets"]}>
                     <i class="fas fa-ticket-alt"></i>
-                    <span>x2</span>
+                    <span>x{totalTickets}</span>
                 </div>
                 <button className={styles["continue-button"]} disabled={order.price ===0} onClick={HandleContinue}>
-                    Continue - {order.price} đ
+                    Continue : {order?.price?.toLocaleString('vi-VN')} đ - {selectedPromotion.reduction.toLocaleString('vi-VN')} đ
                     <i class="fas fa-arrow-right"></i>
                 </button>
             </div>

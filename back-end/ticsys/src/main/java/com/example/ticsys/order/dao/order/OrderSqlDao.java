@@ -68,7 +68,11 @@ public class OrderSqlDao implements IOrderDao {
                      Time timeCreated, String status, int eventId) {
         String sql = "SELECT * FROM [order] WHERE 1=1 ";
         Map<String, Object> paramMap = new HashMap<>();
-
+        
+        if(eventId != -1){
+            sql += "AND eventId = :eventId ";
+            paramMap.put("eventId", eventId);
+        }
         if(userId != null){
             sql += "AND createdBy = :userId ";
             paramMap.put("userId", userId);
@@ -98,6 +102,29 @@ public class OrderSqlDao implements IOrderDao {
         paramMap.put("id", id);
 
         return jdbcTemplate.update(sql, paramMap) > 0;
+    }
+    @Override
+    public int UpdateOrder(int id,Map<String, Object> orderValues) {
+        if (orderValues.isEmpty()) {
+            throw new IllegalArgumentException("orderValues cannot be empty");
+        }
+          
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE [order] SET ");
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", id);
+        int count = 0;
+        for (Map.Entry<String, Object> entry : orderValues.entrySet()) {
+            if (count > 0) {
+                sqlBuilder.append(", ");
+            }
+            sqlBuilder.append(entry.getKey()).append(" = :").append(entry.getKey());
+            paramMap.put(entry.getKey(), entry.getValue());
+            count++;
+        }
+        sqlBuilder.append(" WHERE id = :id");
+        
+        String sql = sqlBuilder.toString();
+        return jdbcTemplate.update(sql, paramMap);
     }
 
 }

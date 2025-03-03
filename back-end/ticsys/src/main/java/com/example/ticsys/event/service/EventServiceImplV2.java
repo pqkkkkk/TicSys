@@ -4,7 +4,6 @@ package com.example.ticsys.event.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -22,8 +21,11 @@ import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.model.Ticket;
 import com.example.ticsys.media.CloudinaryService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Primary
 @Service
+@Slf4j
 public class EventServiceImplV2 implements EventService {
     private final IEventDao eventDao;
     private final ITicketDao ticketDao;
@@ -37,34 +39,49 @@ public class EventServiceImplV2 implements EventService {
     @Override
     @Transactional
     public EventResponse CreateEvent(EventRequest eventRequest, MultipartFile banner, MultipartFile seatMap) {
+        String bannerPath = "";
+        String seatMapPath = "";
         try{
-            String bannerPath = cloudinaryService.uploadFile(banner);
-            String seatMapPath = cloudinaryService.uploadFile(seatMap);
-            if(bannerPath.equals("") || seatMapPath.equals(""))
-            {
+            if(banner != null){
+                bannerPath = cloudinaryService.uploadFile(banner);
+            }
+            else{
+                bannerPath = "empty";
+            }
+            if(seatMap != null){
+                seatMapPath = cloudinaryService.uploadFile(seatMap);
+            }
+            else{
+                seatMapPath = "empty";
+            }
+
+            if(bannerPath.equals("") || seatMapPath.equals("")){
                 throw new Exception("Failed to upload file");
             }
-            eventRequest.getEvent().setBannerPath(bannerPath);
-            eventRequest.getEvent().setSeatMapPath(seatMapPath);
+            eventRequest.getEvent().setBannerPath(bannerPath.equals("empty") ? null : bannerPath);
+            eventRequest.getEvent().setSeatMapPath(seatMapPath.equals("empty") ? null : seatMapPath);
             int eventId = eventDao.CreateEvent(eventRequest.getEvent());
-            if(eventId == -1)
-            {
+            if(eventId == -1){
                 throw new Exception("Failed to create event");
             }
 
-            for(Ticket ticket : eventRequest.getTickets())
-            {
+            for(Ticket ticket : eventRequest.getTickets()){
                 ticket.setEventId(eventId);
-                if(!ticketDao.AddTicket(ticket))
-                {
+                if(!ticketDao.AddTicket(ticket)){
                     throw new Exception("Failed to create ticket");
                 }
             }
 
             return EventResponse.builder().message("success").build();
         }
-        catch (Exception e)
-        {
+        catch (Exception e){
+            String deleteBannerResult = cloudinaryService.deleteFile(bannerPath);
+            String deleteSeatMapResult = cloudinaryService.deleteFile(seatMapPath);
+
+            log.error("Failed to create event: " + e.getMessage());
+            log.error("Delete banner result: " + deleteBannerResult);
+            log.error("Delete seat map result: " + deleteSeatMapResult);
+
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return EventResponse.builder().message(e.getMessage()).build();
         }
@@ -76,8 +93,15 @@ public class EventServiceImplV2 implements EventService {
             Event event = eventDao.GetEventById(id);
             EventDto eventDto = EventDto.builder().event(event).build();
 
+            List<Ticket> tickets = ticketDao.GetTicketsOfEvent(event.getId());
+
+            int minPriceOfTicket = tickets.stream().mapToInt(Ticket::getPrice)
+                                    .min()
+                                    .orElse(0);
+
+            eventDto.setMinPriceOfTicket(minPriceOfTicket);
+
             if(includeStr != null && includeStr.contains("tickets")){
-                List<Ticket> tickets = ticketDao.GetTicketsOfEvent(event.getId());
                 eventDto.setTickets(tickets);
             }
 
@@ -100,8 +124,14 @@ public class EventServiceImplV2 implements EventService {
                 EventDto eventDto = new EventDto();
                 eventDto.setEvent(event);
 
+                List<Ticket> tickets = ticketDao.GetTicketsOfEvent(event.getId());
+
+                int minPriceOfTicket = tickets.stream().mapToInt(Ticket::getPrice)
+                                    .min()
+                                    .orElse(0);
+                eventDto.setMinPriceOfTicket(minPriceOfTicket);
+
                 if(includeStr != null && includeStr.contains("tickets")){
-                    List<Ticket> tickets = ticketDao.GetTicketsOfEvent(event.getId());
                     eventDto.setTickets(tickets);
                 }
 

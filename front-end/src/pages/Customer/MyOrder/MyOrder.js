@@ -1,29 +1,28 @@
 import React from "react";
 import styles from "./MyOrder.module.css";
 import { useState, useEffect } from "react";
-import { GetOrdersWithEventApi } from "../../../services/api/OrderApi";
+import { GetOrdersWithEventApi, GetOrdersWithEventOfUserApi } from "../../../services/api/OrderApi";
 import { GetUser } from "../../../services/UserStorageService";
 import { ConvertDateStringToDateWithMonthName } from "../../../utils/DateUtils";
 import {useNavigate} from "react-router-dom";
 function MyTicket() {
-    const user = GetUser();
     const navigate = useNavigate();
 
     const [orders, setOrders] = useState([]);
-    
+    const [user, setUser] = useState(GetUser());
     useEffect(() => {
         if(!user)
         {
             navigate("/signin");
         }
         else{
-            GetOrdersWithEventApi().then((response) => {
+            GetOrdersWithEventOfUserApi(user.userName).then((response) => {
                 setOrders(response.orderDtos);
             }).catch((error) => {
                 console.log(error);
             });
         }
-    }, []);
+    }, [user,navigate]);
 
     const HandleViewDetailOrder = (orderId) => {
         navigate(`/orders/${orderId}`);
@@ -43,7 +42,8 @@ function MyTicket() {
                 <div className={styles["sub-tab"] + " " + styles["inactive"]}>Past</div>
             </div>
             {orders.map((order) => (
-                <div onClick={() => HandleViewDetailOrder(order.order.id)} className={styles["ticket"]}>
+                <div onClick={() => HandleViewDetailOrder(order.order.id)}
+                    className={styles["ticket"]}>
                     <div className={styles["ticket-date"]}>
                         <p className={styles["day"]}>{ConvertDateStringToDateWithMonthName(order.event.date)[2]}</p>
                         <p className={styles["month"]}>{ConvertDateStringToDateWithMonthName(order.event.date)[1]}</p>

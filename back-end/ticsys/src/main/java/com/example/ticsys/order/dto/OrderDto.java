@@ -1,10 +1,13 @@
 package com.example.ticsys.order.dto;
 
 import java.util.List;
-import java.util.Map;
 
 import com.example.ticsys.order.model.Order;
 import com.example.ticsys.order.model.TicketOfOrder;
+import com.example.ticsys.sharedDto.SharedEventDto;
+import com.example.ticsys.sharedDto.SharedPromotionDto;
+import com.example.ticsys.sharedDto.SharedTicketDto;
+import com.example.ticsys.sharedDto.SharedUserDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +22,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class OrderDto {
     Order order;
-    Map<String,Object> event;
+    SharedEventDto event;
     List<TicketOfOrder> ticketOfOrders;
-    List<Map<String,Object>> ticketInfos;
+    List<SharedTicketDto> ticketInfos;
+    SharedUserDto userInfos;
+    SharedPromotionDto promotionInfo;
 }

@@ -253,7 +253,7 @@
     margin-top: 20px;
     cursor: pointer;
 }
-.discount {
+.discount, .vouchers {
     display: flex;
     margin-top: 20px;
 }
@@ -265,11 +265,19 @@
     background-color: #444;
     color: white;
 }
-.discount button {
+.discount button, .vouchers button {
     background-color: #555;
     color: white;
     padding: 10px;
     border: none;
     border-radius: 0 10px 10px 0;
     cursor: pointer;
+}
+.vouchers select {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px 0 0 10px;
+    background-color: #444;
+    color: white;
 }

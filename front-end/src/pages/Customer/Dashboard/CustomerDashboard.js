@@ -45,7 +45,7 @@ function CustomerDashboard() {
                 <img src={event.event.bannerPath} alt="Event 1"/>
                 <p className={styles["event-name"]}>{event.event.name}</p>
                 <p className={styles["event-time"]}>{event.event.date}  {event.event.time}</p>
-                <p className={styles["event-price"]}>From 300,000₫</p>
+                <p className={styles["event-price"]}>From {event.minPriceOfTicket.toLocaleString('vi-VN')} đ</p>
             </div>
           ))}
             

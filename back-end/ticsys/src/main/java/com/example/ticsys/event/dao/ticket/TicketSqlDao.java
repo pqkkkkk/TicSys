@@ -78,5 +78,14 @@ public class TicketSqlDao implements ITicketDao{
         int result =  jdbcTemplate.update(sql, paramMap);
         return result;
     }
+    @Override
+    public Ticket GetTicketById(int id) {
+        String sql = "SELECT * FROM ticket WHERE id = :id";
+
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", id);
+
+        return jdbcTemplate.queryForObject(sql, paramMap, new TicketRowMapper());
+    }
 
 }

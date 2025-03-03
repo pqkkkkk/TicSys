@@ -17,4 +17,5 @@ import lombok.NoArgsConstructor;
 public class EventDto {
     Event event;
     List<Ticket> tickets;
+    int minPriceOfTicket;
 }

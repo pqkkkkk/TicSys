@@ -96,12 +96,23 @@
 .right-section .pricing {
     margin-bottom: 16px;
 }
-.right-section .pricing div {
+.right-section .pricing div{
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
 }
 .right-section .pricing div span:last-child {
+    color: #2dc275;
+}
+.right-section .promotion-infos {
+    margin-bottom: 16px;
+}
+.right-section .promotion-infos .promotion-info-item{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.right-section .promotion-infos .promotion-info-item .reduction {
     color: #2dc275;
 }
 .right-section .footer {

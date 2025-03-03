@@ -7,6 +7,7 @@ insert into Category values ('Other');
 insert into Category values ('Comedy');
 insert into PromotionType(name) values ('Flash'), ('Combo'), ('Voucher');
 
+insert into Users (userName, email, fullName, passWord, phoneNumber, birthday,gender) values ('admin', 'admin@gmail.com', 'Nguyen Van An', 'admin', '0123456789', '2000-01-01','Male')
 
 select * from Category;
 select * from users;
@@ -17,6 +18,9 @@ select * from Ticket;
 select * from TicketOfOrder;
 select * from [Order];
 select * from Comment;
+select * from PromotionType;
+select * from Promotion;
+select * from VoucherOfUser;
 
 alter table event alter column description nvarchar(max);
 
@@ -26,13 +30,7 @@ alter table ticket drop column type;
 alter table ticket add minQtyInOrder int;
 alter table ticket add maxQtyInOrder int;
 
-delete from Ticket where id = 1;
-delete from Ticket where id = 2;
-delete from Event where id = 17;
 
-delete from [Order] where id = 7;
-delete from TicketOfOrder where id = 3;
-delete from TicketOfOrder where id = 4;
 
 alter table [order] drop column quantity;
 
@@ -43,4 +41,11 @@ alter table comment add timeCreatedAt time default '16:00:00';
  INSERT INTO [comment] (content, senderId, eventId, parentId,dateCreatedAt, timeCreatedAt)
 values ('Is this event interesting?', 'pqkiet854', 18, null, GETDATE(), GETDATE());
 
-delete from Comment where id = 30;
+
+update PromotionType set name = 'Combo Sale' where name = 'Combo';
+update PromotionType set name = 'Flash Sale' where name = 'Flash';
+update PromotionType set name = 'Voucher Gift' where name = 'Voucher';
+
+alter table voucherOfUser add status nvarchar(20);
+
+update Promotion set status = 'active', endDate = '2025-03-04' where id = 2;

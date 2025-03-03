@@ -38,10 +38,12 @@ h2, h3 {
     border: 1px solid #555;
     padding: 10px;
     text-align: left;
+    color: #ffffff;
 }
 
 .order-table th {
     background: #444;
+    color: #ffffff;
 }
 .buyer-info .buyer-table {
     width: 100%;
@@ -54,11 +56,13 @@ h2, h3 {
     border: 1px solid #555;
     padding: 10px;
     text-align: left;
+    color: #ffffff;
 
 }
 
 .buyer-info .buyer-table th {
     background: #444;
+    color: #ffffff;
 }
 .buyer-info .buyer-table td {
     width: 100%;

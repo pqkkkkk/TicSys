@@ -2,8 +2,6 @@ package com.example.ticsys.order.controller;
 
 import java.sql.Time;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,8 +28,12 @@ public class OrderController {
         this.orderService = orderService;
     }
     @PutMapping("/{id}")
-    public ResponseEntity<String> ReserveOrder(@PathVariable int id){
-        String result = orderService.ReserveOrder(id);
+    public ResponseEntity<String> ReserveOrder(@PathVariable int id,
+                                                @RequestParam(required = false) Integer voucherOfUserId){
+        if(voucherOfUserId == null){
+            voucherOfUserId = -1;
+        }
+        String result = orderService.ReserveOrder(id, voucherOfUserId);
         if (result.equals("success")) {
             return ResponseEntity.ok(result);
         } else {
@@ -52,33 +54,18 @@ public class OrderController {
     }
     @GetMapping
     public ResponseEntity<GetOrdersResponse> GetOrders(@RequestParam(value = "include" ,required = false) String includeStr,
-                                                    @RequestParam(required = false) String userIdStr,
-                                                    @RequestParam(required = false) String eventIdStr,
-                                                    @RequestParam(required = false) String dateCreatedAtStr,
-                                                    @RequestParam(required = false) String timeCreatedAtStr,
-                                                    @RequestParam(required = false) String statusStr){
-        
-        Map<String,Object> filterMap = new HashMap<>();
-        if(userIdStr != null){
-            filterMap.put("userId", userIdStr);
-        }
-        if(eventIdStr != null){
-            int eventId = Integer.parseInt(eventIdStr);
-            filterMap.put("eventId", eventId);
-        }
-        if(dateCreatedAtStr != null){
-            LocalDate dateCreatedAt = LocalDate.parse(dateCreatedAtStr);
-            filterMap.put("dateCreatedAt", dateCreatedAt);
-        }
-        if(timeCreatedAtStr != null){
-            Time timeCreatedAt = Time.valueOf(timeCreatedAtStr);
-            filterMap.put("timeCreatedAt", timeCreatedAt);
-        }
-        if(statusStr != null){
-            filterMap.put("status", statusStr);
-        }
+                                                    @RequestParam(value = "userId", required = false) String userIdStr,
+                                                    @RequestParam(required = false, value = "eventId") String eventIdStr,
+                                                    @RequestParam(required = false, value = "dateCreatedAt") String dateCreatedAtStr,
+                                                    @RequestParam(required = false, value = "timeCreatedAt") String timeCreatedAtStr,
+                                                    @RequestParam(required = false, value = "status") String statusStr){
+        String userId = userIdStr;
+        int eventId = eventIdStr == null ? -1 : Integer.parseInt(eventIdStr);
+        LocalDate dateCreatedAt = dateCreatedAtStr == null ? null : LocalDate.parse(dateCreatedAtStr);
+        Time timeCreatedAt = timeCreatedAtStr == null ? null : Time.valueOf(timeCreatedAtStr);
+        String status = statusStr;
 
-        GetOrdersResponse result = orderService.GetOrders(includeStr, filterMap);
+        GetOrdersResponse result = orderService.GetOrders(includeStr, userId, eventId, dateCreatedAt, timeCreatedAt, status);
 
         if (result.getMessage().equals("success")) {
             return ResponseEntity.ok(result);

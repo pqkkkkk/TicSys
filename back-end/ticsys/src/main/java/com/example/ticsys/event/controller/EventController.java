@@ -36,7 +36,7 @@ public class EventController {
     public ResponseEntity<EventResponse> CreateEvent(@RequestParam("event") String eventJson,
                                         @RequestParam("tickets") String ticketsJson,
                                         @RequestParam("banner") MultipartFile banner,
-                                        @RequestParam("seatMap") MultipartFile seatMap)
+                                        @RequestParam(required = false,value = "seatMap") MultipartFile seatMap)
     {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

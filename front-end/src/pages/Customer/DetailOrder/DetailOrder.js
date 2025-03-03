@@ -29,7 +29,7 @@ function DetailOrder() {
         setTotalAmount(totalAmount);
         setTotalTickets(totalTickets);
     }, [order]);
-
+    
     return (
         <div className={styles["container"]}>
             <div className={styles["ticket-header"]}>
@@ -91,12 +91,12 @@ function DetailOrder() {
                         <tr>
                             <td>{order.ticketInfos.at(index).name}</td>
                             <td>{ticketOfOrder.quantity}</td>
-                            <td>{ticketOfOrder.quantity * order.ticketInfos.at(index).price} đ</td>
+                            <td>{(ticketOfOrder.quantity * order.ticketInfos.at(index).price).toLocaleString('vi-VN')} đ</td>
                         </tr>
                     ))}
                 </table>
-                <p><strong>Total tickets: </strong> {totalTickets} đ</p>
-                <p><strong>Total Amount:</strong> {totalAmount} đ</p>
+                <p><strong>Total tickets: </strong> {totalTickets}</p>
+                <p><strong>Total Amount:</strong> {totalAmount?.toLocaleString('vi-VN')} đ</p>
             </div>
         </div>
     );

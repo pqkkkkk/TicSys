@@ -45,31 +45,89 @@
     cursor: pointer;
 }
 .table-container {
-    background-color: white;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    overflow-x: auto;
 }
 table {
     width: 100%;
     border-collapse: collapse;
 }
 th, td {
-    padding: 1rem;
-    text-align: left;
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
 }
 th {
-    background-color: #f8f9fa;
-    color: black;
+    background-color: #f1f5f9;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
 }
 td {
-    color: #6c757d;
+    font-size: 14px;
+    color: #2d3748;
 }
-.no-data {
-    text-align: center;
-    padding: 2rem;
+.flex {
+    display: flex;
+    align-items: center;
 }
-.no-data img {
-    display: block;
-    margin: 0 auto 1rem;
+.ml-4 {
+    margin-left: 16px;
+}
+.bg-green-100 {
+    background-color: #c6f6d5;
+    color: #38a169;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+.toggle-checkbox {
+    width: 40px;
+    height: 20px;
+    appearance: none;
+    background-color: #e2e8f0;
+    border-radius: 9999px;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+}
+.toggle-checkbox:checked {
+    background-color: #38a169;
+}
+.toggle-checkbox:checked::before {
+    transform: translateX(20px);
+}
+.toggle-checkbox::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff;
+    border-radius: 9999px;
+    transition: transform 0.2s;
+}
+.action-buttons{
+    display: flex;
+}
+.action-buttons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+.action-buttons button:hover {
+    color: #2d3748;
+}
+.action-buttons .text-green-600 {
+    color: #38a169;
+}
+.action-buttons .text-gray-400 {
+    color: #cbd5e0;
 }

@@ -26,9 +26,18 @@ export const GetOrderByIdApi = async (orderId) => {
         throw error;
     }
 }
+
 export const GetOrdersWithDetailOrderAndTicketAndEventApi = async () => {
     try {
         const response = await api.get(`/order?include=ticketOfOrders,ticket,event`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoApi = async (eventId) => {
+    try {
+        const response = await api.get(`/order?include=ticketOfOrders,ticket,user&eventId=${eventId}`);
         return response.data;
     } catch (error) {
         throw error;
@@ -42,9 +51,25 @@ export const GetOrdersWithEventApi = async () => {
         throw error;
     }
 }
+export const GetOrdersWithEventOfUserApi = async (userId) => {
+    try {
+        const response = await api.get(`/order?include=event&userId=${userId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 export const GetOrderByIdWithDetailOrderAndTicketApi = async (orderId) => {
     try {
         const response = await api.get(`/order/${orderId}?include=ticketOfOrders,ticket`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const GetOrderByIdWithDetailOrderAndTicketAndPromotionApi = async (orderId) => {
+    try {
+        const response = await api.get(`/order/${orderId}?include=ticketOfOrders,ticket,promotion`);
         return response.data;
     } catch (error) {
         throw error;
@@ -66,9 +91,13 @@ export const GetOrderByIdWithDetailOrderAndTicketAndEventApi = async (orderId) =
         throw error;
     }
 }
-export const ReverseOrderApi = async (orderId) => {
+export const ReserveOrderApi = async (orderId,voucherOfUserId) => {
     try {
-        const response = await api.put(`/order/${orderId}`);
+        let url = `/order/${orderId}`;
+        if(voucherOfUserId){
+            url = `/order/${orderId}?voucherOfUserId=${voucherOfUserId}`;
+        }
+        const response = await api.put(url);
         return response.data;
     } catch (error) {
         throw error;
