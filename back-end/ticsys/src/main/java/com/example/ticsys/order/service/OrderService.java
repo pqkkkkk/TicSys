@@ -17,4 +17,5 @@ public interface OrderService {
                                      LocalDate dateCreatedAt, Time timeCreatedAt, String status);
     public String ReserveOrder(int id, int voucherOfUserId);
     public int UpdateOrder(int id, Order order);
+    public GetOrdersResponse GetOrdersBySearch(String userFullnameKeyword,int eventId,String includeStr);
 }

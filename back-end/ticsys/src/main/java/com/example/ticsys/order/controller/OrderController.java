@@ -59,6 +59,7 @@ public class OrderController {
                                                     @RequestParam(required = false, value = "dateCreatedAt") String dateCreatedAtStr,
                                                     @RequestParam(required = false, value = "timeCreatedAt") String timeCreatedAtStr,
                                                     @RequestParam(required = false, value = "status") String statusStr){
+                        
         String userId = userIdStr;
         int eventId = eventIdStr == null ? -1 : Integer.parseInt(eventIdStr);
         LocalDate dateCreatedAt = dateCreatedAtStr == null ? null : LocalDate.parse(dateCreatedAtStr);
@@ -72,6 +73,24 @@ public class OrderController {
         } else {
             return ResponseEntity.badRequest().body(result);
             
+        }
+    }
+    @GetMapping("/search")
+    public ResponseEntity<GetOrdersResponse> GetOrdersBySearch(@RequestParam(required = false) String userFullNameKeyword,
+                                                        @RequestParam(value="eventId", required = false) Integer eventId,
+                                                        @RequestParam(value = "include" ,required = false) String includeStr){
+        if(userFullNameKeyword == null){
+            userFullNameKeyword = "";
+        }
+        if(eventId == null){
+            eventId = -1;
+        }
+        GetOrdersResponse result = orderService.GetOrdersBySearch(userFullNameKeyword,eventId, includeStr);
+
+        if (result.getMessage().equals("success")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
         }
     }
     @GetMapping("/{id}")

@@ -140,7 +140,44 @@ public class OrderServiceImpl implements OrderService  {
             return CreateOrderResponse.builder().message(e.getMessage()).build();
        }
     }
-
+    private OrderDto populateOrderDto(Order order, String includeStr) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setOrder(order);
+    
+        if (includeStr != null) {
+            if (includeStr.contains("user")) {
+                SharedUserDto user = publicAccountService.GetUserByUsername(order.getCreatedBy());
+                orderDto.setUserInfos(user);
+            }
+            if (includeStr.contains("event")) {
+                SharedEventDto event = publicEventService.GetEventById(order.getEventId());
+                orderDto.setEvent(event);
+            }
+            if (includeStr.contains("ticketOfOrders") && includeStr.contains("ticket")) {
+                List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(order.getId());
+                List<SharedTicketDto> ticketInfos = new ArrayList<>();
+                for (TicketOfOrder ticketOfOrder : ticketOfOrders) {
+                    SharedTicketDto ticketInfo = publicEventService.GetTicketById(ticketOfOrder.getTicketId());
+                    ticketInfos.add(ticketInfo);
+                }
+                orderDto.setTicketOfOrders(ticketOfOrders);
+                orderDto.setTicketInfos(ticketInfos);
+            } else if (includeStr.contains("ticketOfOrders")) {
+                List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(order.getId());
+                orderDto.setTicketOfOrders(ticketOfOrders);
+                orderDto.setTicketInfos(null);
+            }
+            if (includeStr.contains("promotion")) {
+                SharedPromotionDto promotion = publicPromotionService.GetPromotionById(order.getPromotionId());
+                if (promotion != null) {
+                    int reduction = order.getPrice() / (100 - promotion.getPromoPercent()) * 100 - order.getPrice();
+                    promotion.setReduction(reduction);
+                }
+                orderDto.setPromotionInfo(promotion);
+            }
+        }
+        return orderDto;
+    }
     @Override
     public OrderDto GetOrderById(int id, String includeStr) {
         try{
@@ -148,45 +185,8 @@ public class OrderServiceImpl implements OrderService  {
             Order order = orderDao.GetOrderById(id);
             orderDto.setOrder(order);
 
-            if(includeStr == null){
-                return orderDto;
-            }
-
-            if(includeStr.contains("user")){
-                SharedUserDto user = publicAccountService.GetUserByUsername(order.getCreatedBy());
-                orderDto.setUserInfos(user);
-            }
-            if(includeStr.contains("event")) {
-                SharedEventDto event = publicEventService.GetEventById(order.getEventId());
-                orderDto.setEvent(event);
-            }
-            if(includeStr.contains("ticketOfOrders") && includeStr.contains("ticket")) {
-                List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(id);
-                List<SharedTicketDto> ticketInfos = new ArrayList<>();
-
-                for (TicketOfOrder ticketOfOrder : ticketOfOrders){
-                    SharedTicketDto ticketInfo = publicEventService.GetTicketById(ticketOfOrder.getTicketId());
-                    ticketInfos.add(ticketInfo);
-                }
-                orderDto.setTicketOfOrders(ticketOfOrders);
-                orderDto.setTicketInfos(ticketInfos);
-            }
-            else if (includeStr.contains("ticketOfOrders")){
-                List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(id);
-                orderDto.setTicketOfOrders(ticketOfOrders);
-                orderDto.setTicketInfos(null);
-            }
-            if(includeStr.contains("promotion")){
-                SharedPromotionDto promotion = publicPromotionService.GetPromotionById(order.getPromotionId());
-
-                if(promotion != null){
-                    int reduction = order.getPrice() / (100 - promotion.getPromoPercent()) * 100 - order.getPrice();
-                    promotion.setReduction(reduction);
-                }
-
-                orderDto.setPromotionInfo(promotion);
-            }
-            return orderDto;
+            return populateOrderDto(order, includeStr);
+           
         }
         catch (Exception e)
         {
@@ -202,38 +202,27 @@ public class OrderServiceImpl implements OrderService  {
             List<OrderDto> orderDtos = new ArrayList<>();
             List<Order> orders = orderDao.GetOrders(userId, dateCreatedAt, timeCreatedAt, status, eventId);
 
-            if(includeStr != null){
-               for(Order order : orders){
-                OrderDto orderDto = new OrderDto();
-                orderDto.setOrder(order);
-
-                if(includeStr.contains("user")){
-                    SharedUserDto user = publicAccountService.GetUserByUsername(order.getCreatedBy());
-                    orderDto.setUserInfos(user);
-                }
-                if(includeStr.contains("event")) {
-                    SharedEventDto event = publicEventService.GetEventById(order.getEventId());
-                    orderDto.setEvent(event);
-                }
-                if(includeStr.contains("ticketOfOrders") && includeStr.contains("ticket")) {
-                    List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(order.getId());
-                    List<SharedTicketDto> ticketInfos = new ArrayList<>();
-
-                    for (TicketOfOrder ticketOfOrder : ticketOfOrders){
-                        SharedTicketDto ticketInfo = publicEventService.GetTicketById(ticketOfOrder.getTicketId());
-                        ticketInfos.add(ticketInfo);
-                    }
-                    orderDto.setTicketOfOrders(ticketOfOrders);
-                    orderDto.setTicketInfos(ticketInfos);
-                }
-                else if (includeStr.contains("ticketOfOrders")){
-                    List<TicketOfOrder> ticketOfOrders = ticketOfOrderDao.GetTicketsOfOrder(order.getId());
-                    orderDto.setTicketOfOrders(ticketOfOrders);
-                    orderDto.setTicketInfos(null);
-                }
-
+            for(Order order : orders){
+                OrderDto orderDto = populateOrderDto(order, includeStr);
                 orderDtos.add(orderDto);
-               }
+            }
+            return GetOrdersResponse.builder().message("success").orderDtos(orderDtos).build();
+        }
+        catch (Exception e)
+        {
+            return GetOrdersResponse.builder().orderDtos(null).message(e.getMessage()).build();
+        }
+    }
+    @Override
+    public GetOrdersResponse GetOrdersBySearch(String userFullNameKeyword, int eventId, String includeStr) {
+        try{
+
+            List<OrderDto> orderDtos = new ArrayList<>();
+            List<Order> orders = orderDao.SearchOrders(userFullNameKeyword, eventId);
+
+            for(Order order : orders){
+                OrderDto orderDto = populateOrderDto(order, includeStr);
+                orderDtos.add(orderDto);
             }
             return GetOrdersResponse.builder().message("success").orderDtos(orderDtos).build();
         }

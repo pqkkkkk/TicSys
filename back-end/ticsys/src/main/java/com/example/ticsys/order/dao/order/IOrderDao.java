@@ -12,6 +12,7 @@ public interface IOrderDao {
     public Order GetOrderById(int id);
     public List<Order> GetOrders(String userId, LocalDate dateCreated
                         , Time timeCreated, String status, int eventId);
+    public List<Order> SearchOrders(String userFullNameKeyword,int eventId);
     public boolean UpdateOrderStatus(int id, String status);
     public int UpdateOrder(int id, Map<String, Object> orderValues);
 }

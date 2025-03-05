@@ -43,6 +43,14 @@ export const GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoApi = async (eve
         throw error;
     }
 }
+export const GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoBySearchApi = async (eventId,userFullNameKeyword) => {
+    try {
+        const response = await api.get(`/order/search?include=ticketOfOrders,ticket,user&eventId=${eventId}&userFullNameKeyword=${userFullNameKeyword}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 export const GetOrdersWithEventApi = async () => {
     try {
         const response = await api.get(`/order?include=event`);

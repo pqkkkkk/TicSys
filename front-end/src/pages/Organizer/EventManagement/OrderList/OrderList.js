@@ -2,16 +2,17 @@ import React from "react";
 import styles from "./OrderList.module.css";
 import { useState, useEffect } from "react";
 import {useParams} from "react-router-dom";
-import { GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoApi } from "../../../../services/api/OrderApi";
+import { GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoApi,GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoBySearchApi } from "../../../../services/api/OrderApi";
 function OrderList(){
     const {eventId} = useParams();
 
     const [orders, setOrders] = useState([]);
-
+    const [userFullNameKeyword, setUserFullNameKeyword] = useState("");
+    const [isSearching, setIsSearching] = useState(false);
     useEffect(() =>{
         const fetchOrders = async () =>{
            try{
-                const response = await GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoApi(eventId);
+                const response = await GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoBySearchApi(eventId,"");
                 setOrders(response.orderDtos);
            }
               catch(error){
@@ -21,12 +22,33 @@ function OrderList(){
 
         fetchOrders();
     }, [eventId]);
-
+    useEffect(() =>{
+        if(isSearching){
+            const fetchOrders = async () =>{
+                try{
+                        const response = await GetOrdersOfEventWithDetailOrderAndTicketAndUserInfoBySearchApi(eventId,userFullNameKeyword);
+                        setOrders(response.orderDtos);
+                }
+                catch(error){
+                    console.log("Failed to fetch orders: ", error);
+                }
+            };
+            fetchOrders();
+            setIsSearching(false);
+        }
+    },[isSearching,userFullNameKeyword,eventId]);
+    const HandleSearch = async () =>{
+        setIsSearching(true);
+    }
     return(
         <div className={styles["order-list-container"]}>
         <div className={styles["search-input"]}>
-            <input type="text" placeholder="Tìm kiếm theo tên"/>
-            <button><i className="fas fa-search"></i></button>
+            <input
+                value={userFullNameKeyword}
+                onChange={(e) => setUserFullNameKeyword(e.target.value)} 
+                type="text" placeholder="Search by name..."/>
+            <button
+                onClick={HandleSearch}><i className="fas fa-search"></i></button>
         </div>
         <div className={styles["header"]}>
             <input type="checkbox"/>

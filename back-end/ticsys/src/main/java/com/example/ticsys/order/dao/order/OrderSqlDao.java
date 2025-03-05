@@ -126,5 +126,22 @@ public class OrderSqlDao implements IOrderDao {
         String sql = sqlBuilder.toString();
         return jdbcTemplate.update(sql, paramMap);
     }
+    @Override
+    public List<Order> SearchOrders(String userFullNameKeyword, int eventId) {
+        String sql = """
+                    SELECT * FROM [order] o  JOIN users u ON o.createdBy = u.userName 
+                    WHERE u.fullname LIKE :userFullNameKeyword
+                        """;
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("userFullNameKeyword", "%" + userFullNameKeyword + "%");
+
+        if(eventId != -1){
+            sql += " AND eventId = :eventId ";
+            paramMap.put("eventId", eventId);
+        }
+
+
+        return jdbcTemplate.query(sql, paramMap, new OrderRowMapper());
+    }
 
 }
