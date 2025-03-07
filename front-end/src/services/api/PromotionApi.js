@@ -47,6 +47,15 @@ export const GetPromotionsOfEvent = async (eventId) => {
         throw err;
     }
 }
+export const GetPromotionsOfEventWithOrderCount = async (eventId) => {
+    try{
+        const response = await api.get(`/promotion/orderCount?eventId=${eventId}`);
+        return response.data;
+    }
+    catch(err){
+        throw err;
+    }
+}
 export const GetPromotionInfosOfEvent = async (eventId,currentPrice) => {
     try{
         const response = await api.get(`/promotion/reductionInfo?eventId=${eventId}&currentPrice=${currentPrice}`);

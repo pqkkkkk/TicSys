@@ -1,8 +1,8 @@
-package com.example.ticsys.promotion.dto;
+package com.example.ticsys.event.dto.response;
 
 import java.util.List;
 
-
+import com.example.ticsys.event.dto.TimelyEventDataDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class PromotionInfoOfEventResponse {
+public class TimelyEventTicketCountResponse {
+    List<TimelyEventDataDto> ticketCounts;
+    Integer totalTicketCount;
     String message;
-    List<PromotionInfo> promotionInfos;
 }

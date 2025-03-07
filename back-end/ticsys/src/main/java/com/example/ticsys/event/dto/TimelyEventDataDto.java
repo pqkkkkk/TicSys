@@ -1,6 +1,5 @@
-package com.example.ticsys.promotion.dto;
+package com.example.ticsys.event.dto;
 
-import com.example.ticsys.promotion.model.Promotion;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class PromotionInfo {
-    int reduction;
-    Promotion promotion;
+public class TimelyEventDataDto {
+    Integer value;
+    String label;
 }

@@ -7,9 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.ticsys.promotion.dao.promotion.IPromotionDao;
+import com.example.ticsys.promotion.dao.promotion.query.IPromotionQueryDao;
 import com.example.ticsys.promotion.dao.voucherOfUser.IVoucherOfUserDao;
-import com.example.ticsys.promotion.model.Promotion;
+import com.example.ticsys.promotion.dto.PromotionDto;
 import com.example.ticsys.promotion.model.VoucherOfUser;
 import com.example.ticsys.sharedDto.SharedPromotionDto;
 import com.example.ticsys.sharedDto.SharedVoucherOfUserDto;
@@ -19,17 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class PublicPromotionServiceImpl implements PublicPromotionService {
-    private final IPromotionDao promotionDao;
+    private final IPromotionQueryDao promotionQueryDao;
     private final IVoucherOfUserDao voucherOfUserDao;
     @Autowired
-    public PublicPromotionServiceImpl(IPromotionDao promotionDao, IVoucherOfUserDao voucherOfUserDao) {
+    public PublicPromotionServiceImpl(IPromotionQueryDao promotionQueryDao, IVoucherOfUserDao voucherOfUserDao) {
         this.voucherOfUserDao = voucherOfUserDao;
-        this.promotionDao = promotionDao;
+        this.promotionQueryDao = promotionQueryDao;
     }
     @Override
     public int GetReductionOfPromotion(int promotionId, int currentPrice) {
         try{
-            Promotion promotion = promotionDao.GetPromotionById(promotionId);
+            PromotionDto promotion = promotionQueryDao.GetPromotionById(promotionId);
 
             if(promotion.getType().equals("Voucher Gift")){
                 return promotion.getVoucherValue();
@@ -75,7 +75,7 @@ public class PublicPromotionServiceImpl implements PublicPromotionService {
                 return null;
             }
 
-            Promotion promotion = promotionDao.GetPromotionById(promotionId);
+            PromotionDto promotion = promotionQueryDao.GetPromotionById(promotionId);
 
             if(promotion == null){
                 return null;
@@ -118,6 +118,10 @@ public class PublicPromotionServiceImpl implements PublicPromotionService {
     @Override
     public int UpdateVoucherOfUser(SharedVoucherOfUserDto sharedvoucherOfUser) {
         try{
+            if(sharedvoucherOfUser.getId() <= 0){
+                return -1;
+            }
+
             Map<String, Object> newValues = new HashMap<>();
 
             if(sharedvoucherOfUser.getUserId() != null){
@@ -137,7 +141,7 @@ public class PublicPromotionServiceImpl implements PublicPromotionService {
         }
         catch(Exception e){
             log.error("Error in UpdateVoucherOfUser of PublicPromotionService", e);
-            return -1;
+            return 0;
         }
     }
     @Override

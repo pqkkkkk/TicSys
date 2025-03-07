@@ -1,6 +1,5 @@
 package com.example.ticsys.promotion.controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.ticsys.promotion.dto.PromotionInfoOfEventResponse;
+import com.example.ticsys.promotion.dto.PromotionsResponse;
 import com.example.ticsys.promotion.model.Promotion;
 import com.example.ticsys.promotion.service.PromotionService;
 
@@ -38,10 +37,10 @@ public class PromotionController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Boolean> UpdatePromotion(@RequestBody Promotion promotion) {
-        boolean result = promotionService.UpdatePromotion(promotion);
+    public ResponseEntity<Integer> UpdatePromotion(@RequestBody Promotion promotion) {
+        int result = promotionService.UpdatePromotion(promotion);
 
-        if(result){
+        if(result != 0){
             return ResponseEntity.ok(result);
         }
         return ResponseEntity.badRequest().build();
@@ -56,7 +55,33 @@ public class PromotionController {
         return ResponseEntity.badRequest().build();
     }
     @GetMapping
-    public ResponseEntity<List<Promotion>> GetPromotions(@RequestParam(required = false) Integer eventId,
+    public ResponseEntity<PromotionsResponse> GetPromotions(@RequestParam(required = false) Integer eventId,
+                                                         @RequestParam(required = false) String status,
+                                                         @RequestParam(required = false) String type,
+                                                         @RequestParam(required = false) String includeStr) {
+
+        if(eventId == null){
+            eventId = -1;
+        }
+
+        PromotionsResponse result = promotionService.GetPromotions(eventId.intValue(), status, type);
+
+        if(result.getMessage().equals("success")){
+            return ResponseEntity.ok(result);
+        }
+        return ResponseEntity.badRequest().build();
+    }
+    @GetMapping("/reductionInfo")
+    public ResponseEntity<PromotionsResponse> GetReductionInfoOfPromotionsOfEvent(@RequestParam int eventId, @RequestParam int currentPrice) {
+        PromotionsResponse result = promotionService.GetReductionInfoOfPromotionsOfEvent(eventId, currentPrice);
+
+        if(result != null){
+            return ResponseEntity.ok(result);
+        }
+        return ResponseEntity.badRequest().body(result);
+    }
+    @GetMapping("/orderCount")
+    public ResponseEntity<PromotionsResponse> GetPromotionsWithOrderCount(@RequestParam(required = false) Integer eventId,
                                                          @RequestParam(required = false) String status,
                                                          @RequestParam(required = false) String type) {
 
@@ -64,20 +89,11 @@ public class PromotionController {
             eventId = -1;
         }
 
-        List<Promotion> result = promotionService.GetPromotions(eventId.intValue(), status, type);
+        PromotionsResponse result = promotionService.GetPromotionsWithOrderCount(eventId.intValue(), status, type);
 
-        if(result != null){
+        if(result.getMessage().equals("success")){
             return ResponseEntity.ok(result);
         }
-        return ResponseEntity.badRequest().build();
-    }
-    @GetMapping("/reductionInfo")
-    public ResponseEntity<PromotionInfoOfEventResponse> GetReductionInfoOfPromotionsOfEvent(@RequestParam int eventId, @RequestParam int currentPrice) {
-        PromotionInfoOfEventResponse result = promotionService.GetReductionInfoOfPromotionsOfEvent(eventId, currentPrice);
-
-        if(result != null){
-            return ResponseEntity.ok(result);
-        }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body(result);
     }
 }

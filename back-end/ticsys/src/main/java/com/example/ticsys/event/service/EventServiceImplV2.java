@@ -1,6 +1,7 @@
 package com.example.ticsys.event.service;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +13,14 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.ticsys.event.dao.event.IEventDao;
+import com.example.ticsys.event.dao.event.query.EventQuerySqlDao;
 import com.example.ticsys.event.dao.ticket.ITicketDao;
 import com.example.ticsys.event.dto.EventDto;
+import com.example.ticsys.event.dto.TimelyEventDataDto;
 import com.example.ticsys.event.dto.request.EventRequest;
 import com.example.ticsys.event.dto.response.GetEventsResponse;
+import com.example.ticsys.event.dto.response.TimelyEventRevenueResponse;
+import com.example.ticsys.event.dto.response.TimelyEventTicketCountResponse;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.model.Ticket;
@@ -30,9 +35,12 @@ public class EventServiceImplV2 implements EventService {
     private final IEventDao eventDao;
     private final ITicketDao ticketDao;
     private final CloudinaryService cloudinaryService;
+    private final EventQuerySqlDao eventQuerySqlDao;
     @Autowired
-    public EventServiceImplV2(IEventDao eventDao, ITicketDao ticketDao, CloudinaryService cloudinaryService) {
+    public EventServiceImplV2(IEventDao eventDao, ITicketDao ticketDao,
+                                 CloudinaryService cloudinaryService, EventQuerySqlDao eventQuerySqlDao) {
         this.eventDao = eventDao;
+        this.eventQuerySqlDao = eventQuerySqlDao;
         this.ticketDao = ticketDao;
         this.cloudinaryService = cloudinaryService;
     }
@@ -86,7 +94,6 @@ public class EventServiceImplV2 implements EventService {
             return EventResponse.builder().message(e.getMessage()).build();
         }
     }
-
     @Override
     public EventDto GetEventById(int id, String includeStr) {
         try{
@@ -112,7 +119,6 @@ public class EventServiceImplV2 implements EventService {
             return null;
         }
     }
-
     @Override
     public GetEventsResponse GetEvents(String includeStr, Map<String, Object> filterMap) {
         try{
@@ -143,6 +149,68 @@ public class EventServiceImplV2 implements EventService {
         catch (Exception e)
         {
             return GetEventsResponse.builder().message(e.getMessage()).eventDtos(null).build();
+        }
+    }
+    @Override
+    public TimelyEventRevenueResponse CountEventRevenueByDate(Integer eventId, String startDate, String endDate) {
+        try{
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+
+            if(start.isAfter(end)){
+                return TimelyEventRevenueResponse.builder()
+                        .totalRevenue(null)
+                        .revenues(null)        
+                        .message("Invalid date range").build();
+            }
+
+            List<TimelyEventDataDto> revenues = eventQuerySqlDao.GetTimelyEventRevenueByEventId(eventId, startDate, endDate);
+
+            Integer totalRevenue = revenues.stream().mapToInt(TimelyEventDataDto::getValue)
+                                .sum();
+            
+            return TimelyEventRevenueResponse.builder()
+            .totalRevenue(totalRevenue)
+            .revenues(revenues)
+            .message("success").build();
+        }
+        catch(Exception e){
+            return TimelyEventRevenueResponse.builder()
+                        .totalRevenue(null)
+                        .revenues(null)        
+                        .message("Error").build();
+        }
+    }
+    @Override
+    public TimelyEventTicketCountResponse CountEventTicketCountByDate(Integer eventId, String startDate,
+            String endDate) {
+        try{
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+
+            if(start.isAfter(end)){
+                return TimelyEventTicketCountResponse.builder()
+                        .totalTicketCount(null)
+                        .ticketCounts(null)        
+                        .message("Invalid date range").build();
+            }
+
+            List<TimelyEventDataDto> ticketCounts = eventQuerySqlDao.GetTimelyEventTicketCountByEventId(eventId, startDate, endDate);
+
+            Integer totalRevenue = ticketCounts.stream().mapToInt(TimelyEventDataDto::getValue)
+                                .sum();
+            
+            return TimelyEventTicketCountResponse.builder()
+            .totalTicketCount(totalRevenue)
+            .ticketCounts(ticketCounts)
+            .message("success").build();
+        }
+        catch(Exception e){
+            log.error("Error: " + e.getMessage());
+            return TimelyEventTicketCountResponse.builder()
+                        .totalTicketCount(null)
+                        .ticketCounts(null)        
+                        .message("Error").build();
         }
     }
 }

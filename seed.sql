@@ -48,4 +48,56 @@ update PromotionType set name = 'Voucher Gift' where name = 'Voucher';
 
 alter table voucherOfUser add status nvarchar(20);
 
-update Promotion set status = 'active', endDate = '2025-03-04' where id = 2;
+update Promotion set status = 'active', endDate = '2025-03-07' where id = 3;
+
+-- Count orders which apply selected promotion
+select p.*, count(o.id) as orderCount
+from Promotion p join [Order] o on p.ID = o.promotionId
+group by p.ID,p.eventId,p.endDate,p.MinPriceToReach,p.promoPercent,p.startDate,p.status,p.type,p.voucherValue;
+
+
+
+-- Count revenue of event by date
+DECLARE @startDate DATE = '2025-02-05';
+DECLARE @endDate DATE = '2025-03-06';
+
+WITH date_series AS (
+    SELECT DATEADD(DAY, number, @startDate) AS ngay
+    FROM master.dbo.spt_values
+    WHERE type = 'P'
+    AND DATEADD(DAY, number, @startDate) <= @endDate
+)
+SELECT 
+    ds.ngay as label,
+    ISNULL(SUM(o.price), 0) AS revenue
+FROM 
+    date_series ds
+LEFT JOIN 
+    [Order] o ON CAST(o.DateCreatedAt AS DATE) = ds.ngay and o.eventId = 2
+GROUP BY 
+    ds.ngay
+ORDER BY 
+    ds.ngay DESC;
+
+-- Count ticket amount of event by date
+DECLARE @startDate2 DATE = '2025-02-05';
+DECLARE @endDate2 DATE = '2025-03-06';
+
+WITH date_series AS (
+    SELECT DATEADD(DAY, number, @startDate2) AS ngay
+    FROM master.dbo.spt_values
+    WHERE type = 'P'
+    AND DATEADD(DAY, number, @startDate2) <= @endDate2
+)
+SELECT 
+    ds.ngay as label,
+    ISNULL(SUM(too.quantity), 0) AS ticket_amount
+FROM 
+    date_series ds
+LEFT JOIN 
+    [Order] o ON CAST(o.DateCreatedAt AS DATE) = ds.ngay and o.eventId = 2
+LEFT JOIN [TicketOfOrder] too on o.ID = too.orderId
+GROUP BY 
+    ds.ngay
+ORDER BY 
+    ds.ngay DESC;

@@ -47,3 +47,21 @@ export const GetEventsApi = async () => {
         console.log(err);
     }
 }
+ export const GetTicketCountByDateApi = async (eventId,startDate,endDate) => {
+    try{
+        const response = await api.get(`/event/statastics/ticket-count/by-date/${eventId}?startDate=${startDate}&endDate=${endDate}`);
+        return response.data;
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+export const GetEventRevenueByDateApi = async (eventId,startDate,endDate) => {
+    try{
+        const response = await api.get(`/event/statastics/revenue/by-date/${eventId}?startDate=${startDate}&endDate=${endDate}`);
+        return response.data;
+    }
+    catch(err){
+        console.log(err);
+    }
+}

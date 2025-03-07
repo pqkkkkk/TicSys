@@ -110,7 +110,7 @@ function TicketSetUp({tickets, HandleTicketsDataChange, HandleFieldOfTicketInTic
                     setIsAddingTicket(-1);
                     HandleOpenAddTicketModal()}}></i> Add another ticket type
             </div>
-
+            
             {isAddTicketModalOpen && 
                 <div className={styles["overlay"]}>
                     <div className={styles["add-ticket-modal"]}>

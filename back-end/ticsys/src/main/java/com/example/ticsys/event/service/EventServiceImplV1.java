@@ -9,6 +9,8 @@ import com.example.ticsys.event.dao.event.IEventDao;
 import com.example.ticsys.event.dto.EventDto;
 import com.example.ticsys.event.dto.request.EventRequest;
 import com.example.ticsys.event.dto.response.GetEventsResponse;
+import com.example.ticsys.event.dto.response.TimelyEventRevenueResponse;
+import com.example.ticsys.event.dto.response.TimelyEventTicketCountResponse;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.media.CloudinaryService;
@@ -60,5 +62,16 @@ public class EventServiceImplV1 implements EventService {
     public GetEventsResponse GetEvents(String includeStr, Map<String, Object> filterMap)
     {
         return null;
+    }
+    @Override
+    public TimelyEventRevenueResponse CountEventRevenueByDate(Integer eventId, String startDate, String endDate) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'CountEventRevenueByDate'");
+    }
+    @Override
+    public TimelyEventTicketCountResponse CountEventTicketCountByDate(Integer eventId, String startDate,
+            String endDate) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'CountEventTicketCountByDate'");
     }
 }

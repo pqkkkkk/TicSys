@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.ticsys.event.dto.EventDto;
 import com.example.ticsys.event.dto.request.EventRequest;
 import com.example.ticsys.event.dto.response.GetEventsResponse;
+import com.example.ticsys.event.dto.response.TimelyEventRevenueResponse;
+import com.example.ticsys.event.dto.response.TimelyEventTicketCountResponse;
 import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.model.Ticket;
@@ -83,6 +85,64 @@ public class EventController {
         if (result != null) {
             return ResponseEntity.ok(result);
         } else {
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+    @GetMapping("/statastics/revenue/by-date/{id}")
+    public ResponseEntity<TimelyEventRevenueResponse> GetRevenue(@PathVariable int id,
+                                 @RequestParam (required = true) String startDate,
+                                 @RequestParam (required = true) String endDate)
+    {
+        TimelyEventRevenueResponse result = eventService.CountEventRevenueByDate(id, startDate, endDate);
+
+        if(result.getMessage().equals("success")){
+            return ResponseEntity.ok(result);
+        }
+        else{
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+    @GetMapping("/statastics/revenue/by-week/{id}")
+    public ResponseEntity<?> GetRevenueByWeek(@PathVariable int id)
+    {
+        return null;
+    }
+    @GetMapping("/statastics/revenue/by-month/{id}")
+    public ResponseEntity<?> GetRevenueByMonth(@PathVariable int id)
+    {
+        return null;
+    }
+    @GetMapping("/statastics/revenue/by-year/{id}")
+    public ResponseEntity<?> GetRevenueByYear(@PathVariable int id)
+    {
+        return null;
+    }
+    @GetMapping("/statastics/revenue/by-ticket-type/{id}")
+    public ResponseEntity<?> GetRevenueByTicketType(@PathVariable int id)
+    {
+        return null;
+    }
+    @GetMapping("/statastics/revenue/by-promotion-time/{id}")
+    public ResponseEntity<?> GetRevenueByPromotionTime(@PathVariable int id)
+    {
+        return null;
+    }
+    @GetMapping("/statastics/attendance/{id}")
+    public ResponseEntity<?> GetAttendance(@PathVariable int id)
+    {
+        return null;
+    }
+    @GetMapping("/statastics/ticket-count/by-date/{id}")
+    public ResponseEntity<TimelyEventTicketCountResponse> GetTicketCountByDate(@PathVariable int id,
+                                 @RequestParam (required = true) String startDate,
+                                 @RequestParam (required = true) String endDate)
+    {
+        TimelyEventTicketCountResponse result = eventService.CountEventTicketCountByDate(id, startDate, endDate);
+
+        if(result.getMessage().equals("success")){
+            return ResponseEntity.ok(result);
+        }
+        else{
             return ResponseEntity.badRequest().body(result);
         }
     }

@@ -54,7 +54,7 @@ function SelectTicket() {
         const fetchPromotionInfos = async () => {
             const response = await GetPromotionInfosOfEvent(eventId, order.price);
             console.log(response);
-            setPromotionInfos(response.promotionInfos);
+            setPromotionInfos(response.promotions);
         }
         fetchPromotionInfos();
         setSelectedPromotion({
@@ -171,10 +171,10 @@ function SelectTicket() {
                         <div className={styles["promotion-info-item"]}>
                             <div className={styles["radio"]}>
                                 <input disabled={promotionInfo.reduction === 0}
-                                    checked={selectedPromotion.promotionId === promotionInfo.promotion.id}
-                                    onChange={() => setSelectedPromotion((prev) => ({promotionId: promotionInfo.promotion.id, reduction: promotionInfo.reduction}))}
+                                    checked={selectedPromotion.promotionId === promotionInfo.id}
+                                    onChange={() => setSelectedPromotion((prev) => ({promotionId: promotionInfo.id, reduction: promotionInfo.reduction}))}
                                     type="radio" name="promotion"/>
-                                <span>{promotionInfo.promotion.type}</span>
+                                <span>{promotionInfo.type}</span>
                             </div>
                             <span className={styles["reduction"]}> - {promotionInfo.reduction.toLocaleString('vi-VN')} đ</span>
                         </div>

@@ -1,7 +1,6 @@
-package com.example.ticsys.promotion.dao.promotion;
+package com.example.ticsys.promotion.dao.promotion.command;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +12,16 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.ticsys.promotion.model.Promotion;
-import com.example.ticsys.promotion.rowmapper.PromotionRowMapper;
 
 @Repository
-public class PromotionSqlDao implements IPromotionDao {
+public class PromotionCommandSqlDao implements IPromotionCommandDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public PromotionSqlDao(NamedParameterJdbcTemplate jdbcTemplate) {
+    public PromotionCommandSqlDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    @Override
+     @Override
     public int CreatePromotion(Promotion promotion) {
         String sql = """
                 insert into [promotion] (eventId, minPriceToReach, promoPercent, voucherValue, status, type, startDate, endDate)
@@ -55,7 +52,7 @@ public class PromotionSqlDao implements IPromotionDao {
     }
 
     @Override
-    public boolean UpdatePromotion(Promotion promotion) {
+    public int UpdatePromotion(Promotion promotion) {
         String sql = """
                 update [promotion] set 
                 minPriceToReach = :minPriceToReach, promoPercent = :promoPercent,
@@ -73,35 +70,6 @@ public class PromotionSqlDao implements IPromotionDao {
         params.put("startDate", promotion.getStartDate());
         params.put("endDate", promotion.getEndDate());
 
-        return jdbcTemplate.update(sql, params) > 0;
+        return jdbcTemplate.update(sql, params);
     }
-
-    @Override
-    public List<Promotion> GetPromotions(int eventId, String status, String type) {
-        String sql = "SELECT * FROM [promotion] WHERE 1=1 ";
-        Map<String, Object> paramMap = new HashMap<>();
-
-        if(eventId != -1){
-            sql += "AND eventId = :eventId ";
-            paramMap.put("eventId", eventId);
-        }
-        if(status != null){
-            sql += "AND status = :status ";
-            paramMap.put("status", status);
-        }
-        if(type != null){
-            sql += "AND type = :type ";
-            paramMap.put("type", type);
-        }
-        return jdbcTemplate.query(sql, paramMap, new PromotionRowMapper());
-    }
-
-    @Override
-    public Promotion GetPromotionById(int promotionId) {
-        String sql = "SELECT * FROM [promotion] WHERE id = :id";
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("id", promotionId);
-        return jdbcTemplate.queryForObject(sql, paramMap, new PromotionRowMapper());
-    }
-
 }

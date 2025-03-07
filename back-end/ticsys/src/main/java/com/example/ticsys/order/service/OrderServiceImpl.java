@@ -286,9 +286,10 @@ public class OrderServiceImpl implements OrderService  {
             SharedVoucherOfUserDto updateSharedVoucherOfUserDto = SharedVoucherOfUserDto.builder()
                                                                 .id(voucherOfUserId)
                                                                 .promotionId(-1)
+                                                                .voucherValue(-1)
                                                                 .status("USED")
                                                                 .build();
-            if(publicPromotionService.UpdateVoucherOfUser(updateSharedVoucherOfUserDto) <= 0){
+            if(publicPromotionService.UpdateVoucherOfUser(updateSharedVoucherOfUserDto) == 0){
                 throw new Exception("Voucher update failed");
             }
 
