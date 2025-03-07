@@ -38,7 +38,7 @@ public class AuthService {
     {
         String username = signInRequest.getUserName();
         String password = signInRequest.getPassWord();
-        User user = userDao.getUserByUsername(username);
+        User user = userDao.GetUserByUsername(username);
 
         if(user == null)
         {

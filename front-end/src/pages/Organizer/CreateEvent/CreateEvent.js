@@ -1,121 +1,108 @@
-import React, { useState } from "react";
-import {Button, createTheme, FormControl, Input, InputLabel, MenuItem, Select, TextField, ThemeProvider } from "@mui/material";
-import { DatePicker, LocalizationProvider, TimePicker} from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
-import { format } from 'date-fns';
+import React from "react";
+import EventInfo from "./EventInfo/EventInfo";
+import { format } from "date-fns";
+import styles from "./CreateEvent.module.css"
+import TicketSetUp from "./TicketSetUp/TicketSetUp";
+import { useState } from "react";
 import { CreateEventApi } from "../../../services/api/EventApi";
-import "./CreateEvent.css";
-function CreateEvent ()
-{
-    const [banner, setBanner] = useState(null);
-    const [seatMap, setSeatMap] = useState(null);
-    const [date, setDate] = useState(null);
-    const [time, setTime] = useState(null);
-    const [name, setName] = useState(null);
-    const [description, setDescription] = useState(null);
-    const [location, setLocation] = useState(null);
-    const [category, setCategory] = useState(null);
+import { Box, LinearProgress } from "@mui/material";
+import {useNavigate} from "react-router-dom";
+function CreateEvent(){
+    const navigate = useNavigate();
+    const [eventData, setEventData] = useState({
+        banner: null,
+        seatMap: null,
+        date: null,
+        time: null,
+        name: null,
+        description: "",
+        location: null,
+        category: null
+    });
+    const [ticketsData, setTicketsData] = useState([]);
+    const [currentStep,setCurrenrStep] = useState(1);
+    const [creatWaiting, setCreateWaiting] = useState(false);
+    const HandleEventDataChange = (key, value) =>{
+        setEventData((prev) =>({
+            ...prev,
+            [key]: value
+        }))
+    }
+    const HandleTicketsDataChange = (newTicket) =>{
+        setTicketsData((prev) => [...prev, newTicket]);
+    }
+    const HandleFieldOfTicketInTicketsDataChange = (newTicket) =>{
+        setTicketsData((prev) => prev.map((ticket) => ticket.name === newTicket.name ? newTicket : ticket));
+    }
+    const HandleBackClick = () =>{
+        setCurrenrStep(currentStep-1);
+    }
+    const HandleContinueClick = () =>{
+        setCurrenrStep(currentStep+1);
+    }
+    const HandleCreateEvent = async () =>{
+        const eventRequest = new FormData();
+        const event = {
+            organizerId: "admin",
+            status: "Upcoming",
+            date: format(eventData.date, "yyyy-MM-dd"),
+            time:format(eventData.time, "HH:mm:ss"),
+            name: eventData.name,
+            description: eventData.description,
+            location: eventData.location,
+            category: eventData.category
+        };
+        eventRequest.append("event", JSON.stringify(event));
+        eventRequest.append("tickets", JSON.stringify(ticketsData));
+        eventRequest.append("banner", eventData.banner);
+        eventRequest.append("seatMap", eventData.seatMap);
 
-    const darkTheme = createTheme({
-        palette: {
-          mode: 'dark',
-        },
-      });
-    const HandleCreateEvent = async () => {
-        const formData = new FormData();
-        formData.append("organizerId", "admin");
-        formData.append("status","Upcoming");
-        formData.append("banner", banner);
-        formData.append("seatMap", seatMap);
-        formData.append("date", format(date, "yyyy-MM-dd"));
-        formData.append("time", format(time, "HH:mm:ss"));
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("location", location);
-        formData.append("category", category);
-        const response = await CreateEventApi(formData);
-        if(response){
-            console.log(response);
-            if(response.message === "success")
+        setCreateWaiting(true);
+        const eventResponse = await CreateEventApi(eventRequest);
+
+        if(eventResponse){
+            if(eventResponse.message === "success")
             {
                 alert("Event created successfully");
+                navigate("/organizer/events");
             }
             else
             {
-                alert("Event creation failed");
+                alert(eventResponse.message);
             }
+            setCreateWaiting(false);
         }
     }
     return (
-        <ThemeProvider theme={darkTheme}>
-        <div id="main">
-            <div className="input-item">
-                <InputLabel className="label">Banner</InputLabel>
-                <Input
-                    onChange={(e) => setBanner(e.target.files[0])}
-                    fullWidth
-                    type="file">
-                </Input>
+        <div className={styles["create-event"]}>
+            <div className={styles["step-container"]}>
+                <div className={styles["steps"]}>
+                    <div className={styles["step"]}>
+                        <div className={currentStep === 1 ? `${styles["circle"]} ${styles["circle-active"]}` : styles["circle"]}>1</div>
+                        <span>Event information</span>
+                    </div>
+                    <div className={styles["step"]}>
+                    <div className={currentStep === 2 ? `${styles["circle"]} ${styles["circle-active"]}` : styles["circle"]}>2</div>
+                        <span>Ticket</span>
+                    </div>
+                </div>
+                <div className={styles["buttons"]}>
+                    {currentStep !== 1 && <button onClick={HandleBackClick} className={styles["continue"]}>Back</button>}
+                    {currentStep !== 2 && <button onClick={HandleContinueClick} className={styles["continue"]}>Continue</button>}
+                    {currentStep !== 1 && <button onClick={HandleCreateEvent} className={styles["continue"]}>Create</button>}
+                </div>
             </div>
-            <div className="input-item">
-                <InputLabel className="label">Seat map</InputLabel>
-                <Input fullWidth
-                    onChange={(e) => setSeatMap(e.target.files[0])}
-                    type="file">
-                </Input>
+             {creatWaiting && <Box sx={{ width: '100%' }}>
+                <LinearProgress/>
+            </Box>}
+            <div className={styles["create-event-main-content"]}>
+                {currentStep === 1 && <EventInfo event={eventData}
+                    HandleEventDataChange={HandleEventDataChange} />}
+                {currentStep === 2 && <TicketSetUp tickets={ticketsData}
+                    HandleTicketsDataChange={HandleTicketsDataChange}
+                    HandleFieldOfTicketInTicketsDataChange={HandleFieldOfTicketInTicketsDataChange} />}
             </div>
-            <div className="input-item">
-                <InputLabel className="label">Date and time</InputLabel>
-                <LocalizationProvider
-                    className="date-time-input"
-                    fullWidth
-                    dateAdapter={AdapterDateFns}>
-                    <DatePicker onChange={(newDate) => setDate(newDate)}/>
-                    <TimePicker onChange={(newTime) => setTime(newTime)}/>
-                </LocalizationProvider>
-            </div>
-            <div className="input-item">
-                <InputLabel className="label">Name</InputLabel>
-                <TextField
-                    onChange={(e) => setName(e.target.value)}
-                    fullWidth
-                    label="Name" variant="outlined" />
-            </div>
-            <div className="input-item">
-                <InputLabel className="label">Description</InputLabel>
-                <TextField
-                    onChange={(e) => setDescription(e.target.value)}
-                    fullWidth
-                    label="Description" variant="outlined" />
-            </div>
-            <div className="input-item">
-                <InputLabel className="label">Location</InputLabel>
-                <TextField
-                    onChange={(e) => setLocation(e.target.value)}
-                    fullWidth
-                    label="Location" variant="outlined" />
-            </div>
-            <div className="input-item">
-                <InputLabel className="label">Category</InputLabel>
-                <FormControl fullWidth>
-                    <InputLabel className="label">Category</InputLabel>
-                    <Select
-                        onChange={(e) => setCategory(e.target.value)}
-                        label="Category">
-                        <MenuItem value={"Sport"}>Sport</MenuItem>
-                        <MenuItem value={"Music"}>Music</MenuItem>
-                        <MenuItem value={"Comedy"}>Comedy</MenuItem>
-                        <MenuItem value={"Other"}>Other</MenuItem>
-                    </Select>
-                </FormControl>
-            </div>
-
-            <Button
-                onClick={HandleCreateEvent} 
-                className="input-item"
-                variant="contained">Create</Button>
         </div>
-        </ThemeProvider>
     );
 }
 

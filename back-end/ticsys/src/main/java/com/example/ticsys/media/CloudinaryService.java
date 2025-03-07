@@ -33,6 +33,23 @@ public class CloudinaryService {
             return "";
         }
     }
+    public String deleteFile(String filePath)
+    {
+        if(filePath == null || filePath.isEmpty())
+        {
+            return "invalid file path";
+        }
+
+        try{
+            Map<?,?> deleteResult = cloudinary.uploader().destroy(filePath, ObjectUtils.emptyMap());
+            return (String) deleteResult.get("result");
+        }
+        catch (IOException e)
+        {
+            System.out.println(e.getMessage());
+            return "";
+        }
+    }
 
 
 }

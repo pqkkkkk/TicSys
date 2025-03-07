@@ -13,11 +13,16 @@ import com.example.ticsys.account.dao.IUserDao;
 import com.example.ticsys.account.model.OrganizerInfo;
 import com.example.ticsys.account.model.User;
 import com.example.ticsys.media.CloudinaryService;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final IUserDao userDao;
     private final CloudinaryService cloudinaryService;
+    
     @Autowired
     public UserService(IUserDao userDao, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService) {
         this.userDao = userDao;
@@ -28,7 +33,14 @@ public class UserService {
         return userDao.GetAllUsers(role);
     }
     public User GetUserByUsername(String username) {
-        return userDao.getUserByUsername(username);
+        log.info("GetUserByUsername of UserService");
+        try{
+            return userDao.GetUserByUsername(username);
+        }
+        catch(Exception e){
+            log.error("Error in GetUserByUsername of UserService: " + e.getMessage());
+            return null;
+        }
     }
     @Transactional
     public boolean CreateUser(User user) {
@@ -41,8 +53,10 @@ public class UserService {
     }
     @Transactional
     public boolean RegisterforOrganizer(OrganizerInfo organizerInfo, MultipartFile organizerAvt) {
+        String avatarPath = "";
         try{
-            String avatarPath = cloudinaryService.uploadFile(organizerAvt);
+            avatarPath = cloudinaryService.uploadFile(organizerAvt);
+
             if(!avatarPath.equals("")) {
                 throw new Exception("Failed to upload avatar");
             }
@@ -58,6 +72,10 @@ public class UserService {
             return true;
         } 
         catch(Exception e) {
+            if(avatarPath != "") {
+                String deleteResult = cloudinaryService.deleteFile(avatarPath);
+                log.info("RegisterForOrganizer of UserSerivce, delete avatar result: " + deleteResult);
+            }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }

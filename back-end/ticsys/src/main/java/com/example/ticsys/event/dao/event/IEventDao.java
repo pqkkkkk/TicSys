@@ -1,11 +1,12 @@
 package com.example.ticsys.event.dao.event;
 
 import java.util.List;
-
+import java.util.Map;
 import com.example.ticsys.event.model.Event;
 
 public interface IEventDao {
-    public boolean CreateEvent(Event event);
+    public int CreateEvent(Event event);
     public Event GetEventById(int id);
     public List<Event> GetEvents(String category, String status);
+    public Map<String,Object> GetEventByRequiredFieldsList(List<String> requiredFields, int id);
 }

@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./back-end/ticsys
+      dockerfile: Dockerfile
+    container_name: ticsys-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://db:1433;databaseName=ticsys
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=SqlServer@123
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    container_name: ticsys-frontend
+    ports:
+      - "3000:3000"
+    command: ["npm", "start"]
+    depends_on:
+      - backend
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: ticsys-db
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SqlServer@123
+      - MSSQL_PID=Express
+    volumes:
+      - db_data:/var/opt/mssql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql
+
+volumes:
+  db_data:
