@@ -14,7 +14,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.example.ticsys.account.service.Public.PublicAccountService;
 import com.example.ticsys.event.service.Public.PublicEventService;
-import com.example.ticsys.order.dao.order.IOrderDao;
+import com.example.ticsys.order.dao.order.command.IOrderCommandDao;
+import com.example.ticsys.order.dao.order.query.IOrderQueryDao;
 import com.example.ticsys.order.dao.ticketoforder.ITicketOfOrderDao;
 import com.example.ticsys.order.dto.OrderDto;
 import com.example.ticsys.order.dto.request.CreateOrderRequest;
@@ -34,20 +35,23 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class OrderServiceImpl implements OrderService  {
-    private final IOrderDao orderDao;
+    private final IOrderCommandDao orderCommandDao;
+    private final IOrderQueryDao orderQueryDao;
     private final ITicketOfOrderDao ticketOfOrderDao;
     private final PublicEventService publicEventService;
     private final PublicAccountService publicAccountService;
     private final PublicPromotionService publicPromotionService;
     @Autowired
-    public OrderServiceImpl(IOrderDao orderDao, ITicketOfOrderDao ticketOfOrderDao,
+    public OrderServiceImpl(ITicketOfOrderDao ticketOfOrderDao,
+                            IOrderCommandDao orderCommandDao, IOrderQueryDao orderQueryDao,
                              PublicEventService publicEventService, PublicAccountService publicAccountService,
                              PublicPromotionService publicPromotionService) {
-        this.orderDao = orderDao;
         this.ticketOfOrderDao = ticketOfOrderDao;
         this.publicEventService = publicEventService;
         this.publicAccountService = publicAccountService;
         this.publicPromotionService = publicPromotionService;
+        this.orderCommandDao = orderCommandDao;
+        this.orderQueryDao = orderQueryDao;
     }
     private boolean isOrderValid(Order order){
         return order.getEventId() != 0 && order.getPrice() != 0;
@@ -119,7 +123,7 @@ public class OrderServiceImpl implements OrderService  {
             order.setDateCreatedAt(LocalDate.now());
             order.setTimeCreatedAt(Time.valueOf(java.time.LocalTime.now()));
 
-            int orderId = orderDao.CreateOrder(order);
+            int orderId = orderCommandDao.CreateOrder(order);
             if(orderId == -1){
                 throw new Exception("Order creation failed");
             }
@@ -182,7 +186,7 @@ public class OrderServiceImpl implements OrderService  {
     public OrderDto GetOrderById(int id, String includeStr) {
         try{
             OrderDto orderDto = new OrderDto();
-            Order order = orderDao.GetOrderById(id);
+            Order order = orderQueryDao.GetOrderById(id);
             orderDto.setOrder(order);
 
             return populateOrderDto(order, includeStr);
@@ -200,7 +204,7 @@ public class OrderServiceImpl implements OrderService  {
         try{
 
             List<OrderDto> orderDtos = new ArrayList<>();
-            List<Order> orders = orderDao.GetOrders(userId, dateCreatedAt, timeCreatedAt, status, eventId);
+            List<Order> orders = orderQueryDao.GetOrders(userId, dateCreatedAt, timeCreatedAt, status, eventId);
 
             for(Order order : orders){
                 OrderDto orderDto = populateOrderDto(order, includeStr);
@@ -208,8 +212,7 @@ public class OrderServiceImpl implements OrderService  {
             }
             return GetOrdersResponse.builder().message("success").orderDtos(orderDtos).build();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return GetOrdersResponse.builder().orderDtos(null).message(e.getMessage()).build();
         }
     }
@@ -218,7 +221,7 @@ public class OrderServiceImpl implements OrderService  {
         try{
 
             List<OrderDto> orderDtos = new ArrayList<>();
-            List<Order> orders = orderDao.SearchOrders(userFullNameKeyword, eventId);
+            List<Order> orders = orderQueryDao.SearchOrders(userFullNameKeyword, eventId);
 
             for(Order order : orders){
                 OrderDto orderDto = populateOrderDto(order, includeStr);
@@ -235,7 +238,7 @@ public class OrderServiceImpl implements OrderService  {
     @Transactional
     public String ReserveOrder(int id, int voucherOfUserId) {
         try{
-            Order order = orderDao.GetOrderById(id);
+            Order order = orderQueryDao.GetOrderById(id);
 
             if(order == null){
                 throw new Exception("Order is not valid");
@@ -343,7 +346,7 @@ public class OrderServiceImpl implements OrderService  {
                 orderValues.put("createdBy", order.getCreatedBy());
             }
             
-            return orderDao.UpdateOrder(id, orderValues);
+            return orderCommandDao.UpdateOrder(id, orderValues);
         }
         catch (Exception e)
         {

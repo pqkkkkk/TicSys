@@ -1,16 +1,23 @@
 import React from "react";
 import styles from "./DetailOrder.module.css";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { GetOrderByIdWithDetailOrderAndTicketAndEventApi } from "../../../services/api/OrderApi";
 import { GetUser } from "../../../services/UserStorageService";
 function DetailOrder() {
-    const user = GetUser();
+    const navigate = useNavigate();
+    const [user, setUser] = useState(GetUser());
     const { orderId } = useParams();
     const [order, setOrder] = useState({});
     const [totalAmount, setTotalAmount] = useState(0);
     const [totalTickets, setTotalTickets] = useState(0);
 
+    useEffect(() => {
+        if(user === null || user.role !== "CUSTOMER") {
+            navigate('/signin');
+        }
+    }
+    , [navigate,user]);
     useEffect(() => {
         GetOrderByIdWithDetailOrderAndTicketAndEventApi(orderId).then((response) => {
             setOrder(response);

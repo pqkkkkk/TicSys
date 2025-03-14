@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,7 @@ public class EventController {
         this.eventService = eventService;
     }
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN','ORGANIZER')")
     public ResponseEntity<EventResponse> CreateEvent(@RequestParam("event") String eventJson,
                                         @RequestParam("tickets") String ticketsJson,
                                         @RequestParam("banner") MultipartFile banner,
@@ -89,6 +91,7 @@ public class EventController {
         }
     }
     @GetMapping("/statastics/revenue/by-date/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<TimelyEventRevenueResponse> GetRevenue(@PathVariable int id,
                                  @RequestParam (required = true) String startDate,
                                  @RequestParam (required = true) String endDate)
@@ -103,36 +106,43 @@ public class EventController {
         }
     }
     @GetMapping("/statastics/revenue/by-week/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<?> GetRevenueByWeek(@PathVariable int id)
     {
         return null;
     }
     @GetMapping("/statastics/revenue/by-month/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<?> GetRevenueByMonth(@PathVariable int id)
     {
         return null;
     }
     @GetMapping("/statastics/revenue/by-year/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<?> GetRevenueByYear(@PathVariable int id)
     {
         return null;
     }
     @GetMapping("/statastics/revenue/by-ticket-type/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<?> GetRevenueByTicketType(@PathVariable int id)
     {
         return null;
     }
     @GetMapping("/statastics/revenue/by-promotion-time/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<?> GetRevenueByPromotionTime(@PathVariable int id)
     {
         return null;
     }
     @GetMapping("/statastics/attendance/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<?> GetAttendance(@PathVariable int id)
     {
         return null;
     }
     @GetMapping("/statastics/ticket-count/by-date/{id}")
+    @PreAuthorize("@eventSecurityServiceImpl.CheckEventOwner(#id)")
     public ResponseEntity<TimelyEventTicketCountResponse> GetTicketCountByDate(@PathVariable int id,
                                  @RequestParam (required = true) String startDate,
                                  @RequestParam (required = true) String endDate)

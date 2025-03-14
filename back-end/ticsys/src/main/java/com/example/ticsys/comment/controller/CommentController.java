@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,6 +29,7 @@ public class CommentController {
         this.commentService = commentService;
     }
     @GetMapping
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<Comment>> GetComments(@RequestParam(required = false) String senderId,
                                                      @RequestParam(required = false) Integer eventId,
                                                      @RequestParam(required = false) Integer parentId) {
@@ -44,6 +46,7 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'ORGANIZER')")
     public ResponseEntity<Integer> CreateComment(@RequestBody Comment comment) {
         int result = commentService.CreateComment(comment);
         if (result == -1) {
@@ -52,6 +55,7 @@ public class CommentController {
         return ResponseEntity.ok(result);
     }
     @PutMapping
+    @PreAuthorize("@commentSecurityServiceImpl.CanCommandComment(#comment.senderId,#comment.eventId)")
     public ResponseEntity<String> UpdateComment(@RequestBody Comment comment) {
         boolean result = commentService.UpdateComment(comment);
         if (!result) {
