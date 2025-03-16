@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.example.ticsys.order.mapper.TicketOfOrderRowMapper;
 import com.example.ticsys.order.model.TicketOfOrder;
-import com.example.ticsys.order.rowmapper.TicketOfOrderRowMapper;
 
 @Repository
 public class TicketOfOrderSqlDao implements ITicketOfOrderDao {

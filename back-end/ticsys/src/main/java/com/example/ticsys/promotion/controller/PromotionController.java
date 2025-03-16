@@ -3,6 +3,8 @@ package com.example.ticsys.promotion.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,7 @@ public class PromotionController {
     }
 
     @PostMapping
+    @PreAuthorize("@promotionSecurityServiceImpl.CanAccessCreateAndUpdatePromotion(#promotion.eventId)")
     public ResponseEntity<Integer> CreatePromotion(@RequestBody Promotion promotion) {
         int result = promotionService.CreatePromotion(promotion);
 
@@ -37,6 +40,7 @@ public class PromotionController {
     }
     
     @PutMapping("/{id}")
+    @PreAuthorize("@promotionSecurityServiceImpl.CanAccessCreateAndUpdatePromotion(#promotion.eventId)")
     public ResponseEntity<Integer> UpdatePromotion(@RequestBody Promotion promotion) {
         int result = promotionService.UpdatePromotion(promotion);
 
@@ -46,6 +50,7 @@ public class PromotionController {
         return ResponseEntity.badRequest().build();
     }
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ORGANIZER')")
     public ResponseEntity<Promotion> GetPromotionById(@PathVariable int id) {
         Promotion result = promotionService.GetPromotionById(id);
 
@@ -55,6 +60,7 @@ public class PromotionController {
         return ResponseEntity.badRequest().build();
     }
     @GetMapping
+    @PreAuthorize("@promotionSecurityServiceImpl.CanAccessGetPromotions(#eventId)")
     public ResponseEntity<PromotionsResponse> GetPromotions(@RequestParam(required = false) Integer eventId,
                                                          @RequestParam(required = false) String status,
                                                          @RequestParam(required = false) String type,
@@ -72,6 +78,7 @@ public class PromotionController {
         return ResponseEntity.badRequest().build();
     }
     @GetMapping("/reductionInfo")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_ORGANIZER"})
     public ResponseEntity<PromotionsResponse> GetReductionInfoOfPromotionsOfEvent(@RequestParam int eventId, @RequestParam int currentPrice) {
         PromotionsResponse result = promotionService.GetReductionInfoOfPromotionsOfEvent(eventId, currentPrice);
 
@@ -81,6 +88,7 @@ public class PromotionController {
         return ResponseEntity.badRequest().body(result);
     }
     @GetMapping("/orderCount")
+    @PreAuthorize("@promotionSecurityServiceImpl.CanGetPromotionsWithOrderCount(#eventId)")
     public ResponseEntity<PromotionsResponse> GetPromotionsWithOrderCount(@RequestParam(required = false) Integer eventId,
                                                          @RequestParam(required = false) String status,
                                                          @RequestParam(required = false) String type) {

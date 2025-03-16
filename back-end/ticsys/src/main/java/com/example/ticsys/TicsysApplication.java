@@ -9,5 +9,5 @@ public class TicsysApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TicsysApplication.class, args);
 	}
-
+	
 }

@@ -70,5 +70,12 @@ public class EventQuerySqlDao implements IEventQueryDao {
         Map<String, Object> params = Map.of("startDate", startDate, "endDate", endDate, "eventId", eventId);
         return jdbcTemplate.query(sql.toString(), params, new TimelyEventDataRowMapper());
     }
+    @Override
+    public String GetUsernameOfEventOwner(Integer eventId) {
+        String sql = "SELECT e.organizerId FROM [event] e WHERE e.ID = :eventId";
+        Map<String, Object> params = Map.of("eventId", eventId);
+        return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
+    
 
 }

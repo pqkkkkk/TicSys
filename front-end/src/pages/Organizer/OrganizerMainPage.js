@@ -4,7 +4,19 @@ import OrganizerNavigation from "../../components/OrganizerNavigation/OrganizerN
 import styles from "./OrganizerMainPage.module.css"
 import CreateEvent from "./CreateEvent/CreateEvent";
 import MyEventList from "./MyEventList/MyEventList";
+import { GetUser } from "../../services/UserStorageService";
+import { useEffect,useState } from "react";
+import { useNavigate } from "react-router-dom";
 function OrganizerMainPage() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(GetUser());
+
+  useEffect(() => {
+    if(user === null || user.role !== "ORGANIZER") {
+      navigate('/error');
+    }
+  }, [navigate,user]);
+
   return (
       <div className={styles["container"]}>
         <OrganizerNavigation />

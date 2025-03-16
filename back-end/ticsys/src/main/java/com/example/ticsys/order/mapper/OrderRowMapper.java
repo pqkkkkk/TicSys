@@ -1,4 +1,4 @@
-package com.example.ticsys.order.rowmapper;
+package com.example.ticsys.order.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

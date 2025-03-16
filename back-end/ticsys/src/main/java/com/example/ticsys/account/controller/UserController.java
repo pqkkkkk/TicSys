@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ public class UserController {
         this.userService = userService;
     }
     @GetMapping("/{username}")
+    @PreAuthorize("@accountSecurityServiceImpl.IsAccountOwner(#username)")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         log.info("getUserByUsername of UserController, username: ", username);
         User user = userService.GetUserByUsername(username);
@@ -54,6 +56,7 @@ public class UserController {
         }
     }
     @PostMapping("/organizer")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZER', 'USER')")
     public ResponseEntity<String> registerForOrganizer(@ModelAttribute OrganizerInfo organizerInfo, @RequestParam MultipartFile organizerAvt) {
         if(userService.RegisterforOrganizer(organizerInfo, organizerAvt)){
             return ResponseEntity.ok("successfully");

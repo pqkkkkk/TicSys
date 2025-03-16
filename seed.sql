@@ -8,12 +8,22 @@ insert into Category values ('Comedy');
 insert into PromotionType(name) values ('Flash'), ('Combo'), ('Voucher');
 
 insert into Users (userName, email, fullName, passWord, phoneNumber, birthday,gender) values ('admin', 'admin@gmail.com', 'Nguyen Van An', 'admin', '0123456789', '2000-01-01','Male')
+insert into RoleOfUser(roleName,userId) values ('ADMIN','admin')
+insert into RoleOfUser(roleName,userId) values ('USER','admin')
+insert into RoleOfUser(roleName,userId) values ('ORGANIZER','admin')
+update Users set passWord = '$2a$12$wRLx0rjeVNcI.Tt9CzmVPue72ER0Z3sHtYpEee/ECJ72GF0xZOSJa' where userName = 'admin';
+
+
+insert into Users (userName, email, fullName, passWord, phoneNumber, birthday,gender) values ('admin2', 'admin2@gmail.com', 'Nguyen Van Binh', '$2a$12$M96m7iAcm/GAKKr631r1JulXIiGkF54HQZMIvOXT33snBRqTUUwme', '0123456789', '2000-01-01','Male')
+insert into RoleOfUser(roleName,userId) values ('ADMIN','admin')
+insert into RoleOfUser(roleName,userId) values ('USER','admin')
+insert into RoleOfUser(roleName,userId) values ('ORGANIZER','admin')
 
 select * from Category;
 select * from users;
 select * from role;
 select * from RoleOfUser;
-select * from event;
+select * from [event];
 select * from Ticket;
 select * from TicketOfOrder;
 select * from [Order];
@@ -101,3 +111,13 @@ GROUP BY
     ds.ngay
 ORDER BY 
     ds.ngay DESC;
+
+
+select *
+from [Order] o join Users u on o.createdBy = u.userName
+				join TicketOfOrder too on o.ID = too.orderId
+				join Event e on o.eventId = e.ID
+				join Ticket t on e.id = t.eventId and too.ticketId = t.ID
+where o.id = 3;
+
+		

@@ -25,7 +25,9 @@ import com.example.ticsys.event.dto.response.EventResponse;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.model.Ticket;
 import com.example.ticsys.media.CloudinaryService;
+import com.example.ticsys.redis.RedisService;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Primary
@@ -36,13 +38,16 @@ public class EventServiceImplV2 implements EventService {
     private final ITicketDao ticketDao;
     private final CloudinaryService cloudinaryService;
     private final EventQuerySqlDao eventQuerySqlDao;
+    private final RedisService redisService;
     @Autowired
     public EventServiceImplV2(IEventDao eventDao, ITicketDao ticketDao,
-                                 CloudinaryService cloudinaryService, EventQuerySqlDao eventQuerySqlDao) {
+                                 CloudinaryService cloudinaryService, EventQuerySqlDao eventQuerySqlDao,
+                                 RedisService redisService) {
         this.eventDao = eventDao;
         this.eventQuerySqlDao = eventQuerySqlDao;
         this.ticketDao = ticketDao;
         this.cloudinaryService = cloudinaryService;
+        this.redisService = redisService;
     }
     @Override
     @Transactional
@@ -122,6 +127,13 @@ public class EventServiceImplV2 implements EventService {
     @Override
     public GetEventsResponse GetEvents(String includeStr, Map<String, Object> filterMap) {
         try{
+            // if(redisService.getData("events") != null){
+            //     log.info("Get events from Redis");
+            //     List<EventDto> eventDtos = (List<EventDto>) redisService.getData("events");
+            //     return GetEventsResponse.builder().message("success").eventDtos(eventDtos).build();
+            // }
+
+            log.info("Get events from database");
             List<EventDto> eventDtos = new ArrayList<>();
             List<Event> events = eventDao.GetEvents(null, null);
 
@@ -151,6 +163,30 @@ public class EventServiceImplV2 implements EventService {
             return GetEventsResponse.builder().message(e.getMessage()).eventDtos(null).build();
         }
     }
+    // @PostConstruct
+    // public void AddEventsToRedis(){
+    //     List<EventDto> eventDtos = new ArrayList<>();
+    //     List<Event> events = eventDao.GetEvents(null, null);
+
+    //     for(Event event : events)
+    //     {
+    //         EventDto eventDto = new EventDto();
+    //         eventDto.setEvent(event);
+
+    //         List<Ticket> tickets = ticketDao.GetTicketsOfEvent(event.getId());
+
+    //         int minPriceOfTicket = tickets.stream().mapToInt(Ticket::getPrice)
+    //                             .min()
+    //                             .orElse(0);
+    //         eventDto.setMinPriceOfTicket(minPriceOfTicket);
+
+    //         eventDto.setTickets(tickets);
+
+    //         eventDtos.add(eventDto);
+    //     }
+
+    //     redisService.saveData("events", eventDtos);
+    // }
     @Override
     public TimelyEventRevenueResponse CountEventRevenueByDate(Integer eventId, String startDate, String endDate) {
         try{

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableGlobalAuthentication
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private String signerKey = "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij";
     @Bean
@@ -29,12 +31,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/account/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/account/user").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/account/user/**").hasAnyRole("USER", "ADMIN", "ORGANIZER")
                 .requestMatchers(HttpMethod.GET, "/api/account/user").hasRole("ADMIN")
-                .requestMatchers("/api/event/**").permitAll()
-                .requestMatchers("/api/order/**").permitAll()
-                .requestMatchers("/api/comment/**").permitAll()
-                .requestMatchers("/api/promotion/**").permitAll()
+                .requestMatchers("/api/event/{id}").permitAll()
+                .requestMatchers("/api/event").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/comment").permitAll()
                 .requestMatchers("/api/notification/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()

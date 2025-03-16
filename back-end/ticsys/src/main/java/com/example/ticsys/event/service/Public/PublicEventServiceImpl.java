@@ -2,10 +2,13 @@ package com.example.ticsys.event.service.Public;
 
 
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.example.ticsys.event.dao.event.IEventDao;
+import com.example.ticsys.event.dao.event.query.IEventQueryDao;
 import com.example.ticsys.event.dao.ticket.ITicketDao;
 import com.example.ticsys.event.model.Event;
 import com.example.ticsys.event.model.Ticket;
@@ -20,10 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 public class PublicEventServiceImpl implements PublicEventService {
     private final ITicketDao ticketDao;
     private final IEventDao eventDao;
+    private final IEventQueryDao eventQueryDao;
 
-    public PublicEventServiceImpl(ITicketDao ticketDao, IEventDao eventDao) {
+    @Autowired
+    public PublicEventServiceImpl(ITicketDao ticketDao, IEventDao eventDao,
+                                IEventQueryDao eventQueryDao) {
         this.ticketDao = ticketDao;
         this.eventDao = eventDao;
+        this.eventQueryDao = eventQueryDao;
     }
     @Override
     public SharedTicketDto GetTicketById(int id) {
@@ -81,6 +88,17 @@ public class PublicEventServiceImpl implements PublicEventService {
             return result;
         }
         catch (Exception e){
+            return null;
+        }
+    }
+    @Override
+    public String GetUsernameOfEventOwner(int eventId) {
+        try{
+            String result = eventQueryDao.GetUsernameOfEventOwner(eventId);
+            return result;
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
             return null;
         }
     }
